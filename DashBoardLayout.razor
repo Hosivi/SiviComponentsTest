@@ -1,0 +1,92 @@
+﻿@using SiviComponents.Menu
+@using SiviComponents.Services;
+@using Microsoft.AspNetCore.Components.Routing
+@inject NavigationManager NavigationManager
+@implements IDisposable
+<SVSpinner>
+    <Container Height="@Height">
+        <Row Height="100%">
+            <Div Width="@Width" BackgroundColor="#00B294; " Height="@Height">
+                <MenuBar NavItems="SideBarNavs" @ref="MenuBar"></MenuBar>
+            </Div>
+            <Column Width="@($"calc( 100% - {Width} )")" Height="100%">
+                <Container Height="100%">
+                    <Row Height="5%">
+                        <Column Cols="8" DefaultCssStyles="@(new List<CssStyle>() { new CssStyle("padding-left", "0 !important"), new CssStyle("display", "flex"), new CssStyle("justify-content", "flex-start"), new CssStyle("align-items", "center") })">
+                            <h5 class="h5">@Title</h5>
+                        </Column>
+                        <Column Cols="4" DefaultCssStyles="@(new List<CssStyle>() { new CssStyle("padding-left", "0 !important"), new CssStyle("display", "flex"), new CssStyle("justify-content", "flex-end"), new CssStyle("align-items", "flex-end") })" >
+                            <SVTimer></SVTimer>
+                        </Column>
+                    </Row>
+                    @LayoutBody
+                </Container>
+            </Column>
+        </Row>
+    </Container>
+</SVSpinner>
+
+@code {
+    MenuBar MenuBar;
+    [Parameter] public RenderFragment LayoutBody { get; set; }
+    [Parameter] public RenderFragment CustomHeaderNavMenu { get; set; }
+    [Parameter] public List<NavItem> SideBarNavs { get; set; } = new List<NavItem>();
+    [Parameter] public List<NavItem> HeaderBarNavs { get; set; } = new List<NavItem>();
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string Width { get; set; } = "70px !important";
+    NavItem? SelectedNavItem;
+    string Height = "100vh";
+
+    private void HandleLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        var location = args.Location;
+        var baseUri = NavigationManager.BaseUri;
+	    Console.WriteLine("se cambio la url");
+        SideBarNavs.ForEach(x =>
+        {
+            var c = baseUri + x.URI;
+        });
+        var nav = SideBarNavs.FirstOrDefault(x => baseUri + x.URI == location);
+        SelectedNavItem = nav;
+	    if (SelectedNavItem is null)
+	    {
+		    Title = SideBarNavs.First().Title;
+		    StateHasChanged();
+	    }
+	    else
+	    {
+		    Title = SelectedNavItem.Title;
+		    StateHasChanged();
+	    }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (SelectedNavItem is null)
+        {
+            Title = SideBarNavs.First().Title;
+        }
+        else
+        {
+            Title = SelectedNavItem.Title;
+	        StateHasChanged();
+        }
+        base.OnParametersSet();
+    }
+
+    protected override void OnInitialized()
+    {
+	    if (SelectedNavItem is null)
+	    {
+		    Title = SideBarNavs.First().Title;
+	    }
+        NavigationManager.LocationChanged += HandleLocationChanged;
+        base.OnInitialized();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+
+}

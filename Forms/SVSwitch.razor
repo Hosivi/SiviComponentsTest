@@ -1,0 +1,16 @@
+﻿@inherits SVInputRadio
+@if (ConditionalRendering) {
+	<div class="form-check form-switch">
+		<input class="form-check-input" type="checkbox" id="@Id"
+		       @oninput="@(async (ChangeEventArgs e) =>{
+			                 await OnValueChanged(e);
+			                 await OnValueStringChanged(e);
+			                 if (ConditionalAction.HasDelegate)
+			                 { await ConditionalAction.InvokeAsync();} })"
+		       disabled="@IsDisabled" value="@Value">
+		<label class="form-check-label" for="@Id">@Label</label>
+	</div>
+}
+@code {
+	[Parameter] public EventCallback ConditionalAction { get; set; }
+}

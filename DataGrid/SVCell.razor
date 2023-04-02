@@ -1,0 +1,52 @@
+﻿@inject ICssMapper CssMapper
+@typeparam TValue
+@if (Template is null) {
+	@if (IsHeader)
+	{
+		<th style="text-align: center;">@FieldName</th>
+	}
+	else
+	{
+		<td style="@CustomClass">
+			<p>@(string.IsNullOrEmpty(PropertyValue?.ToString()) ? "" : PropertyValue?.ToString())</p>
+		</td>
+
+	}
+}
+else																		  
+{
+	<td class="@CustomClass" style="@CustomClass">
+		<div>
+			@Template
+		</div>
+	</td>
+}
+
+
+
+@code {
+	[Parameter] public RenderFragment? Template { get; set; }
+	[Parameter] public RenderFragment? ChildContent { get; set; }
+	[CascadingParameter] public SVRow<TValue> SelectedRow { get; set; }
+	[Parameter] public bool IsHeader { get; set; }
+	[Parameter]
+	public string FieldName { get; set; }
+	[Parameter]
+	public string CustomClass { get; set; }
+	[Parameter]
+	public List<CssStyle>? StylesInTag { get; set; } = new List<CssStyle>();
+	[Parameter]
+	public List<CssStyle>? CustomTagStyles { get; set; } = new List<CssStyle>();
+	[Parameter] public string PropertyValue { get; set; }
+	protected override void OnInitialized() {
+		StylesInTag.Add(new CssStyle("text-align", "center"));
+		//StylesInTag.Add(new CssStyle("justify-content", "center"));
+		//StylesInTag.Add(new CssStyle("align-items", "center"));
+		//StylesInTag.Add(new CssStyle("display", "flex"));
+		//StylesInTag.Add(new CssStyle("padding-top", ""));
+		//StylesInTag.Add(new CssStyle("padding-bottom", ""));
+		CustomClass = CssMapper.AddCustomStylesInTag(StylesInTag, CustomClass);
+		
+	}
+	}
+

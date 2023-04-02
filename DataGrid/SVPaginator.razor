@@ -1,0 +1,156 @@
+﻿@using System.ComponentModel.Design
+@typeparam TValue
+<nav aria-label="...">
+	<ul class="pagination">
+		@if ((Grid.SelectedPage?.NumberOfPage >= Radio || Grid.SelectedPage?.NumberOfPage > 1)&&Grid.Data.Count() != 0)
+		{
+			<li class="page-item">
+				<a class="page-link" tabindex="-1" aria-disabled="false" @onclick="PreviousSelectedPage">Prev</a>
+			</li>
+		}
+		@foreach (var pag in RadioPages)
+		{
+			<li class="page-item @(pag.IsActualPage ? "active" : "")" @onclick="@((() => { ChangePage(pag); }))">
+				<a class="page-link" tabindex="-1" aria-disabled="true">@pag.NumberOfPage</a>
+			</li>
+		}
+		@if (Grid.SelectedPage?.NumberOfPage < NumberOfPages)
+		{
+			<li class="page-item">
+				<a class="page-link" tabindex="-1" aria-disabled="false" @onclick="NextSelectedPage">Next</a>
+			</li>
+		}
+	</ul>
+</nav>
+@code {
+	#region Parámetros
+
+	[Parameter]
+	public int Radio { get; set; } = 3;
+	[Parameter] public int CountData { get; set; }
+	[Parameter] public int NumberOfItems { get; set; } = 10;
+	[Parameter] public EventCallback OnAfterSelectPage { get; set; }
+	[CascadingParameter(Name = "Grid")] public SVDataGrid<TValue> Grid { get; set; }
+	public int ActualPage = 1;
+	#endregion
+	#region Attributos
+	List<Page> RadioPages = new List<Page>();
+	int NumberOfPages;
+	#endregion
+	#region Eventos
+	public void ChangePage(Page page)
+	{
+		Grid.SelectedPage = page;
+		foreach (var p in RadioPages)
+		{
+			p.IsActualPage = false;
+			ActualPage = p.NumberOfPage;
+		}
+		Grid.SelectedPage.IsActualPage = true;
+		if (OnAfterSelectPage.HasDelegate)
+		{
+			OnAfterSelectPage.InvokeAsync();
+			
+		}
+	}
+	#endregion
+	#region Ciclos de Vida
+	protected override async Task OnInitializedAsync() {
+		GetNumberOfPages();
+		RenderRadioPages();
+		Console.WriteLine(NumberOfPages);
+		Console.WriteLine(CountData);
+	}
+
+
+	#endregion
+
+	#region Eventos
+	public void GetNumberOfPages()
+	{
+		CountData = Grid.DataSize;
+		if (CountData % Grid.ItemsForPage > 0)
+		{
+			NumberOfPages = CountData / Grid.ItemsForPage + 1;
+		}
+		else
+		{
+			NumberOfPages = CountData / Grid.ItemsForPage;
+		}
+		if (Radio>NumberOfPages) {
+			Radio = NumberOfPages;
+		}
+	}
+
+	public void RenderRadioPages(int init) {
+		var lst = new List<Page>();
+		if (init==0) {
+			init = 1;
+		}
+		for (int i = init; i <= init+Radio-1; i++)
+		{
+			lst.Add(new Page() { NumberOfPage = i });
+		}
+		RadioPages = lst;
+	}
+	public void RenderRadioPages() {
+		var lst = new List<Page>();
+		var finalLapse = Grid.SelectedPage.NumberOfPage + Radio-1;
+		if (NumberOfPages<=finalLapse) {
+			finalLapse = NumberOfPages;
+		}
+		for (int i = Grid.SelectedPage.NumberOfPage; i <= finalLapse; i++)
+		{
+			if (i == Grid.SelectedPage.NumberOfPage)
+			{																																						 
+				lst.Add(new Page(){IsActualPage = true, NumberOfPage = i});
+			} else {
+				lst.Add(new Page() { IsActualPage = false, NumberOfPage = i });
+			}
+		}
+		RadioPages = lst; 
+	}
+
+	void NextSelectedPage() {
+		var lastPage = RadioPages.Last();
+		if (Grid.SelectedPage== lastPage) {
+			RenderRadioPages();
+			var page = RadioPages.FirstOrDefault(x => x.NumberOfPage == Grid.SelectedPage.NumberOfPage + 1);
+			ChangePage(page);
+		} else {
+			var page = RadioPages.FirstOrDefault(x=>x.NumberOfPage==Grid.SelectedPage.NumberOfPage+1);
+			ChangePage(page);
+		}
+	}
+
+	void PreviousSelectedPage() {
+		var prevPage = RadioPages.First();
+		if (Grid.SelectedPage.NumberOfPage == prevPage.NumberOfPage)
+		{
+			RenderRadioPages(prevPage.NumberOfPage-Radio+1);
+			ChangePage(RadioPages.First(x=>x.NumberOfPage==Grid.SelectedPage.NumberOfPage-1));
+			//RenderRadioPages();
+		}
+		else
+		{
+			var page = RadioPages.FirstOrDefault(x => x.NumberOfPage == Grid.SelectedPage.NumberOfPage - 1);
+			if (page is null) {
+				RenderRadioPages(prevPage.NumberOfPage - Radio + 1);
+			}
+			ChangePage(page);
+		}
+	}
+	#endregion
+}
+@code {
+
+	#region Clase Page
+	public class Page
+	{
+		public int NumberOfPage { get; set; }
+		public int NumberOfItems { get; set; }
+		public bool IsActualPage { get; set; } = false;
+	}
+	#endregion
+
+}

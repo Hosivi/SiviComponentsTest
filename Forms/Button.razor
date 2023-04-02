@@ -1,0 +1,152 @@
+﻿@using SiviComponents.Menu
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Routing
+@using System.Diagnostics
+@inherits SiviDomComponentBase
+@inject NavigationManager NavigationManager
+@implements IDisposable
+@if (Type.Trim().Contains("primary"))
+{
+    <button type="button" id="@Id" class="btn btn-primary @classList" style="@styles" @onclick="WhenOnclick">
+        @if (NavItem.IfIconNav)
+        {
+            <i class="@NavItem.IconClass"></i>
+        }@if (ChildContent is not null)
+        {
+            @ChildContent
+        }
+        @ButtonText
+    </button>
+}
+@if (Type.Trim().Equals("link"))
+{
+	<a id="@Id" class="btn btn-link @classList @(NavItem.IsActive ? "onactive": "")" href="@NavItem.URI"  role="button"  >
+		@if (NavItem.IfIconNav)
+		{
+			<i class="@NavItem.IconClass"></i>
+		}
+		@if (NavItem.Text != null)
+		{
+			@NavItem.Text
+		}
+		@ChildContent
+	</a>
+	<style>
+        .btn .btn-link:focus {
+            outline: unset !important;
+            webkit-box-shadow: 0 !important;
+            box-shadow: 0 !important;
+        }
+        .btn-link {
+            padding-left:0;
+            padding-right:0;
+        }
+	</style>
+}
+@if (Type.Trim().Equals("link-form")) {
+	<button id="@Id" class="btn btn-link @classList @(NavItem.IsActive ? "onactive": "")"   type="button" @onclick="@(Navigate)" >
+		@if (NavItem.IfIconNav)
+		{
+			<i class="@NavItem.IconClass"></i>
+		}
+		@if (NavItem.Text != null)
+		{
+			@NavItem.Text
+		}
+		@ChildContent
+	</button>
+	<style>
+	    .btn .btn-link:focus {
+            outline: unset !important;
+            webkit-box-shadow: 0 !important;
+            box-shadow: 0 !important;
+        }
+        .btn-link {
+            padding-left:0;
+            padding-right:0;
+        }
+	</style>
+}
+@if (Type.Trim().Contains("submit"))
+{
+    <button type="submit" id="@Id" class="btn btn-primary @CustomClassList" style="@styles" @onclick="WhenOnclick" @onclick:preventDefault="true">
+        @ChildContent
+    </button>
+}
+
+
+@code {
+
+    [Parameter]
+    public string Type { get; set; } = "primary";
+    @*[Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object> Attributes { get; set; }*@
+
+    [Parameter]
+    public EventCallback<EventArgs> OnclickWithArgs { get; set; }
+    [Parameter] public string ButtonText { get; set; }
+    [Parameter]
+    public EventCallback<Object?> Onclick { get; set; }
+    [Parameter]
+    public EventCallback<NavItem> OnNavigate { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnclickLinkButton { get; set; }
+
+    [Parameter]
+    public Object? ObjectButton { get; set; }
+    private string? hrefAbsolute;
+    [Parameter]
+    public NavItem NavItem { get; set; } = new NavItem();
+    protected override void OnInitialized()
+    {
+        if (Type.Equals("link"))
+        {
+            NavigationManager.LocationChanged += OnNavigateTo;
+            hrefAbsolute = NavigationManager.ToAbsoluteUri(NavItem.URI).AbsolutePath;
+            Console.WriteLine(hrefAbsolute);
+        }
+        base.OnInitialized();
+
+    }
+    public void OnNavigateTo(object sender, LocationChangedEventArgs args)
+    {
+        var hrefActual = NavigationManager.ToAbsoluteUri(NavigationManager.Uri).AbsolutePath;
+        if (hrefActual.Trim() == NavItem.URI.Trim())
+        {
+            NavItem.IsActive = true;
+        }
+        else
+        {
+            NavItem.IsActive = false;
+        }
+        if (OnNavigate.HasDelegate)
+        {
+            OnNavigate.InvokeAsync(NavItem);
+        }
+        StateHasChanged();
+    }
+
+	private void Navigate() {
+		NavigationManager.NavigateTo(NavItem.URI);
+	}
+
+    public async Task WhenOnclick()
+    {
+        await Onclick.InvokeAsync(ObjectButton);
+    }
+
+    public void Dispose()
+    {
+        if (Type.Equals("link"))
+        {
+            NavigationManager.LocationChanged -= OnNavigateTo;
+        }
+    }
+
+
+}
+
+
+
+
+

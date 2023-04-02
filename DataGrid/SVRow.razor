@@ -1,0 +1,134 @@
+﻿@using Utils
+@typeparam TValue
+<CascadingValue Value="this">
+
+	@if (RowType.Equals(RowType.Header))
+	{
+		<tr>
+			@foreach (var c in Cols)
+			{
+				<SVCell IsHeader="true" FieldName="@c.PropertyName" TValue="TValue" />
+			}
+		</tr>
+	}
+	@if (RowType.Equals(RowType.Filtering))
+	{
+		<tr>
+			@foreach (var c in Cols)
+			{
+				<SVCell TValue="TValue">
+					<Template>
+						@if (!c.ColumnType.Equals(ColumnType.Custom))
+						{
+							@if (c.Filtering)
+							{
+								var searcher = Grid.SearcherValue;
+								var propInfo = ORMethods.GetPropInfo(searcher.GetType(), c.PropertyValue);
+								@if (propInfo.PropertyType == typeof(string))
+								{
+									<SVInputText OnInputMode="true" WithBox="false" IsDisabled="false" ValueChanged="@(async (val) => {
+								              if (propInfo is not null)
+								              {
+									              ORMethods.SetValue(searcher, c.PropertyValue, val);
+								              }
+								              await Grid.AllData();})" />
+								}
+								@if (propInfo.PropertyType == typeof(int) || propInfo.PropertyType == typeof(decimal))
+								{
+									<SVInputNumber OnInputMode="true" WithBox="false" IsDisabled="false"
+							ValueChanged="@(async (val) => {
+										                           if (propInfo is not null)
+										                           {
+											                           ORMethods.SetValue(searcher, c.PropertyValue, val);
+										                           }
+								              await Grid.AllData();})" />
+
+								}
+								@if (propInfo.PropertyType == typeof(DateTime)) {
+									@if (c.FilterCellTemplate is null) {
+										<SVDatePickerComponent  ValueChanged="@(async (val) => { if (propInfo is not null) { ORMethods.SetValue(searcher, c.PropertyValue, val); } await Grid.AllData();})"/>
+									}
+									@c.FilterCellTemplate
+								}
+								@if (propInfo.PropertyType.IsEnum||propInfo.PropertyType == typeof(List<>))
+								{
+									@c.FilterCellTemplate
+								}
+							}
+							else
+							{
+								<SVInputText WithBox="false" IsDisabled="true" />
+							}
+						}
+					</Template>
+				</SVCell>
+			}
+		</tr>
+	}
+	@if (RowType.Equals(RowType.Default))
+	{
+		<tr @onmouseover="@(() => { Grid.SelectedValue = this; IsActive ="table-active"; } )" @onmouseout="@(() =>{IsActive ="";})" class="@IsActive">
+			@foreach (var c in Cols)
+			{
+				var searcher = Grid.SearcherValue;
+				@if (c.ColumnType.Equals(ColumnType.Custom))
+				{
+					<SVCell TValue="TValue">
+						<Template>@c.Template</Template>
+					</SVCell>
+				}
+				else
+				{
+					var propInfo = ORMethods.GetPropInfo(typeof(TValue), c.PropertyValue);
+					@if (propInfo.PropertyType.IsEnum) {
+						<SVCell TValue="TValue" PropertyValue="@(propInfo.GetValue(Value).GetAttribute<StringFieldAttribute>().StringifiedValue)"></SVCell>
+					} else {
+						<SVCell TValue="TValue" PropertyValue="@(ObjectPropertiesAnalizer.GetValueOfProperty(c.PropertyValue,Value, null))"></SVCell>
+					}
+					
+				}
+			}
+		</tr>
+	}
+
+</CascadingValue>
+
+
+
+@code {
+
+	#region Parámetros
+	[Parameter] public bool IsHeader { get; set; } = false;
+	[Parameter] public bool IsFiltering { get; set; } = false;
+	[Parameter] public RowType RowType { get; set; }
+	//[Parameter] public RenderFragment? FilterCellTemplate { get; set; }
+	[CascadingParameter(Name = "Cols")] public List<Column> Cols { get; set; }
+	[CascadingParameter(Name = "Grid")] public SVDataGrid<TValue> Grid { get; set; }
+	[Parameter] public TValue Value { get; set; }
+	public string? IsActive = "";
+	string val = "";
+
+
+	#endregion
+
+	#region Funciones
+
+	public List<TValue> FilterValue(TValue filterValue, string propName)
+	{
+		var dataGrid = Grid.Data;
+		var searcher = Grid.SearcherValue;
+		var values = dataGrid.Where(x =>
+		{
+			var commonOfDatagrid = x?.GetType().GetProperty(propName)?.GetValue(x)?.ToString();
+			var commonOfSearcher = filterValue?.GetType().GetProperty(propName)?.GetValue(filterValue)?.ToString();
+			return commonOfDatagrid.Contains(commonOfSearcher);
+		}).ToList();
+		return values;
+
+	}
+
+
+	#endregion
+
+
+}

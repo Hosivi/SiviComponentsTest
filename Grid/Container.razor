@@ -1,0 +1,16 @@
+﻿@using SiviComponents.Services
+@inherits SiviDomComponentBase
+<CascadingValue Value="this">
+	<div id="@Id" @attributes="Attributes">
+		@ChildContent
+	</div>
+</CascadingValue>
+@code{
+
+	protected override void OnInitialized()
+{
+		CustomClassList?.Add("container-fluid");
+		base.OnInitialized();
+	}
+
+}

@@ -1,0 +1,50 @@
+﻿@using FluentValidation.Results
+@typeparam TValue where TValue: class
+@inject IValidationService ValidationService
+<div class="form-block">
+	@if (!IsValid)
+	{
+		@foreach (var error in validationResult.Errors)
+		{
+			<p>@error.ErrorMessage</p>
+		}
+	}
+</div>
+@code {
+	[Parameter] public TValue Model { get; set; }
+	[Parameter] public bool IsValid { get; set; } = true;
+	[Parameter] public bool FirstTime { get; set; } = true;
+	
+
+	public ValidationResult? validationResult;
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender)
+		{
+			FirstTime = false;
+		}
+	}
+
+	protected override void OnParametersSet()
+	{
+		if (!FirstTime)
+		{
+			OnValidate();
+		}
+	}
+
+	public void OnValidate()
+	{
+		validationResult = ValidationService.ValidateModel(Model);
+		if (!validationResult.IsValid)
+		{
+			IsValid = false;
+		}
+		else
+		{
+			IsValid = true;
+		}
+
+	}
+
+}

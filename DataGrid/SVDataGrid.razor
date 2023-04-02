@@ -1,0 +1,193 @@
+﻿@using SharedKernel.Interfaces
+@using SharedKernel
+@using System.Linq.Expressions
+@typeparam TValue
+<CascadingValue Value="this" Name="Grid">
+	<CascadingValue Value="Cols" Name="Cols">
+		<CascadingValue Value="SVColumnList" Name="SVColumns">
+			<SVSpinner @ref="Spin" ExternalRendering="true">
+			@SVContent
+			@if (ItemContent is not null) {
+					@ItemContent(Value)
+			}
+			<div class="row w-100">
+					<h5 class="h4">@GridTitle</h5>
+			</div>
+			<div class="tools-content mb-3">
+				<div class="filters"></div>
+				<div class="tools">
+					<div class="btn-group">
+						@SVDataGridTools
+					</div>
+				</div>
+			</div>
+			<div class="table-container">
+				<table class="table table-sm">
+					<thead>
+					@SVColumns
+					<SVRow TValue="TValue" RowType="RowType.Header"></SVRow>
+					</thead>
+					<tbody>
+					
+					@if (RenderRows) {
+						@if (Data.Count() == 0) {
+							<p>No hay registros</p>
+						} else {
+							@if (Filtering) {
+								@if (Cols.Any(x => x.Filtering)) {
+									<SVRow TValue="TValue" IsHeader="false" RowType="RowType.Filtering"></SVRow>
+								}
+							}
+							foreach (var d in Data) {
+								<SVRow TValue="TValue" RowType="RowType.Default" Value="@d"></SVRow>
+							}
+						}
+					}
+						
+					</tbody>
+				</table>
+				
+				@if (RenderRows)
+				{
+					<SVPaginator @ref="Paginator" TValue="TValue" CountData="DataSize" Radio="Radio" OnAfterSelectPage="AllData"></SVPaginator>
+				}
+			</div>
+			</SVSpinner>
+			<style>
+				.tools-content {
+					display: flex;
+					justify-content: flex-end;
+					align-content: center;
+					width: 100%;
+				}
+
+				.tools {
+					display: flex;
+					justify-content: flex-end;
+					align-items: center;
+					width: 50%;
+				}
+
+				.filters {
+					width: 50%;
+				}
+			</style>
+		</CascadingValue>
+	</CascadingValue>
+</CascadingValue>
+
+@code {
+	/// <summary>
+	/// DataGrid:
+	/// **Modalidades de ingreso y salida de datos:
+	/// 1. Desde un conjunto de datos
+	/// 2. Desde la base de datos
+	/// </summary>
+
+	#region Parámetros
+	#region Parámetros Comunes
+	[Parameter] public RenderFragment SVColumns { get; set; }
+	[Parameter] public RenderFragment? SVContent { get; set; }
+	[Parameter] public RenderFragment<TValue>? ItemContent { get; set; }
+	[Parameter] public List<TValue> Data { get; set; }
+	[Parameter] public SVRow<TValue>? SelectedValue { get; set; }
+	[Parameter] public TValue? Value { get; set; }
+	[Parameter] public RenderFragment SVDataGridTools { get; set; }
+	[Parameter] public Func<Task<int>>? CountDataSize { get; set; }
+	[Parameter] public int ItemsForPage { get; set; } = 10;
+	[Parameter] public int Radio { get; set; } = 3;
+	[Parameter] public int DataSize { get; set; }
+	[Parameter] public TValue SearcherValue { get; set; }
+    
+    [Parameter] public bool Filtering { get; set; } = true;
+	[Parameter]
+	public string GridTitle {get; set; }
+	#endregion
+	/// <summary>
+	/// GetDataFunc, es una función que se ejecuta cuando se necesita obtener los datos de la base de datos pasándole la cantidad de items por página
+	/// , página seleccionada y el objeto de filtro.
+	/// </summary>
+	#region Parámetros de Modalidad de funcionamiento
+	[Parameter] public DataGridMode DataGridMode { get; set; } = DataGridMode.FromDataBase;
+	[Parameter] public Func<int, int, TValue?, Task<List<TValue>>>? GetDataFunc { get; set; }
+	[Parameter] public ISpecification<TValue>? Filters { get; set; }
+	#endregion
+	#endregion
+	#region Attributos
+	public List<SVColumn> SVColumnList = new List<SVColumn>();
+	List<Column> Cols = new List<Column>();
+	bool RenderRows = false;
+	SVSpinner Spin;
+	public SVPaginator<TValue> Paginator;
+	public SVPaginator<TValue>.Page SelectedPage = new SVPaginator<TValue>.Page() { IsActualPage = true, NumberOfPage = 1 };
+	#endregion
+	#region Ciclos de Vida
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			RenderRows = true;
+			Spin.RenderChild();
+			Value = Data.FirstOrDefault();
+		}
+	}
+	protected override async Task OnInitializedAsync()
+	{
+		Data = new List<TValue>();
+		if (Filtering)
+		{
+			SearcherValue = Activator.CreateInstance<TValue>();
+		}
+		if (DataGridMode.Equals(DataGridMode.FromDataBase))
+		{
+			await GetData();
+			await CountData();
+		}
+	}
+
+	protected override async Task OnParametersSetAsync() {
+		var props = SearcherValue.GetType().GetProperties();
+		foreach (var p in props) {
+			Console.WriteLine(p.Name+": "+p.GetValue(SearcherValue));
+		}
+
+	}
+
+	#endregion
+	#region Eventos
+	public async Task GetData()
+	{
+		if (GetDataFunc is not null)
+		{
+			Data = await GetDataFunc(SelectedPage.NumberOfPage,ItemsForPage, SearcherValue);
+		}
+	}
+
+	public async Task CountData()
+	{
+		if (CountDataSize is not null)
+		{
+			DataSize = await CountDataSize.Invoke();
+
+		}
+	}
+
+	public async Task AllData()
+	{
+		await GetData();
+		await CountData();
+		Paginator.GetNumberOfPages();
+		Paginator.RenderRadioPages();
+		SearcherValue = Activator.CreateInstance<TValue>();
+		StateHasChanged();
+	}
+	public void Filter(List<TValue> data)
+	{
+		Data = data;
+		StateHasChanged();
+	}
+	#endregion
+}
+
+
+

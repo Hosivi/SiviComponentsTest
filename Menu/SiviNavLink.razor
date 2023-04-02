@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@*Componente desactivado reemplazado por el momento por button tipo nav*@
+@inherits SiviDomComponentBase
+@inject NavigationManager NavigationManager;
+<a href="route">
+   @if (IconLink) {
+		 <i class="IconClass" style="@IconStyles"></i>
+   } 
+   @ChildContent	
+</a>
+@code {
+	/// <summary>
+	/// Parameters
+	/// </summary>
+	[Parameter] public bool IconLink { get; set; }
+	[Parameter] public RenderFragment? ChildContent { get; set; }
+	[Parameter] public string IconCssClass { get; set; }
+	[Parameter] public string IconStyles  { get; set; }
+	[Parameter] public string Uri { get; set; }
+	string AbsoluteUri="/";
+	bool isActive { get; set; }
+
+	
+	protected override void OnInitialized() {
+		NavigationManager.LocationChanged += OnLocationChanged;
+	}
+
+	public void OnLocationChanged(object? sender, LocationChangedEventArgs args) {
+		NavigationManager.ToAbsoluteUri(args.Location);
+	}
+
+}

@@ -1,0 +1,241 @@
+﻿<CascadingValue Value="this">
+    <Container NewClass="stepper">
+        @StepContents
+        <SVSpinner @ref="Spin" ExternalRendering="true">
+            @if (Steps.Count() >= 3 && renderSteps)
+            {
+                <Row>
+                    <Column Cols="4">
+                        <Row>
+                            <Column Cols="12">
+                                <h5 class="h4" style="margin-bottom: 1rem; margin-top: 1rem;">@StepTitle</h5>
+                            </Column>
+                            <Column Cols="12">
+                                <ul class="stepper-list-content">
+                                    @foreach (var step in Steps)
+                                    {
+                                        <li class="step-item @(step.IsActive ? "step-active":"")">
+                                            <span class="stepper-circle-content">
+                                                <span class="stepper-circle">@step.Index.ToString()</span>
+                                            </span>
+                                            <span class="stepper-text">@step.Title</span>
+                                        </li>
+                                        @if (step.Index != lastIndex)
+                                        {
+                                            <li class="step-item-separator">
+                                                <span class=""></span>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </Column>
+                        </Row>
+                    </Column>
+                    <Column Cols="8">
+                        <Row>
+                            <Column Cols="12">
+                                <h5 class="h5"></h5>
+                            </Column>
+                            <Column Cols="12" NewClass="steps-content">
+                                @foreach (var step in Steps) {
+	                                step.StepNoNext = stepNoNext;
+	                                @if (step.IsActive)
+                                    {
+		                                <div class="slide-left">
+			                                @step.ChildContent
+		                                </div>
+		                                <div class="stepper-footer">
+			                                @if (onStateIndex != 1)
+			                                {
+				                                <Button Onclick="GoBack">@step.OnBeforeText</Button>
+			                                }
+			                                @if (!stepNoNext) {
+                                        
+				                                <Button Onclick="Next">@(onStateIndex == lastIndex ? "Finalizar" : step.OnNextText )</Button>
+			                                }
+
+		                                </div>
+                                    }
+
+                                }
+                            </Column>
+                        </Row>
+                    </Column>
+                </Row>
+            }
+            else
+            {
+                <h5 class="h5">@($"Usted debe tener un mínimo de {Steps.Count()} pasos")</h5>
+            }
+        </SVSpinner>
+    </Container>
+	<style>
+        .stepper {
+	        margin: 0 !important;
+            padding:0; !important;
+        }
+		.stepper-list-content {
+			width: 100%;
+			list-style: none;
+			padding-left: 0;
+		}
+
+		.step-item {
+			display: flex;
+			flex-direction: row;
+			min-height: 3rem;
+		}
+
+		.stepper-circle-content {
+			display: flex;
+			align-items: center;
+		}
+
+		.step-item-separator {
+			height: 2rem;
+		}
+
+		.step-item-separator span {
+			margin-left: 1rem;
+			border-left: 2px solid rgba(0,178,148,.8);
+		}
+
+		.stepper-text {
+			width: 100%;
+			padding-left: 1rem;
+			display: flex;
+			align-items: center;
+		}
+
+		.stepper-circle {
+			width: 2rem;
+			height: 2rem;
+			background-color: #00B294;
+			border-radius: 100%;
+			text-align: center;
+			line-height: 2rem;
+		}
+
+		.stepper-footer {
+            width:100%;
+			display: flex;
+			justify-content: flex-end;
+			flex-direction: row;
+		}
+        .stepper-footer button:last-child {
+            margin-left:1rem;
+        }
+		.steps-content {
+			display: flex;
+			flex-direction: column;
+		}
+		.step-active {
+			background-color: rgba(0, 178, 148, .5);
+		}
+		.slide-left {
+			/* -webkit-animation: slide-left 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+            animation: slide-left 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;*/
+			width: 100%;
+			height: 400px;
+		}
+
+		@@-webkit-keyframes slide-left {
+			0% {
+				-webkit-transform: translateX(0);
+				transform: translateX(0);
+			}
+
+			100% {
+				-webkit-transform: translateX(-100px);
+				transform: translateX(-100px);
+			}
+		}
+
+		@@keyframes slide-left {
+			0% {
+				-webkit-transform: translateX(0);
+				transform: translateX(0);
+			}
+
+			100% {
+				-webkit-transform: translateX(-100px);
+				transform: translateX(-100px);
+			}
+		}
+	</style>
+</CascadingValue>
+
+
+@code {
+    SVSpinner Spin;
+    [Parameter] public string StepTitle { get; set; }
+    [Parameter]
+    public List<Step> Steps { get; set; } = new List<Step>();
+    [Parameter]
+    public string OnBeforeText { get; set; } = "Regresar";
+    [Parameter]
+    public string OnNextText { get; set; } = "Siguiente";
+    [Parameter] public EventCallback OnBefore { get; set; }
+    [Parameter] public EventCallback OnAfter { get; set; }
+    [Parameter] public RenderFragment StepContents { get; set; }
+    int firstIndex = 1;
+    int lastIndex;
+    int onStateIndex = 1;
+    bool renderSteps = false;
+    public bool stepNoNext= false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            lastIndex = Steps.Count();
+            renderSteps = true;
+            Spin.RenderChild();
+        }
+    }
+
+
+	public async Task GoBack()
+    {
+        if (onStateIndex != firstIndex)
+        {
+            Steps.ForEach(x =>
+            {
+                if (x.Index == onStateIndex - 1)
+                {
+                    x.OnActive();
+                }
+                else
+                {
+                    x.OnInactive();
+                }
+
+            });
+            onStateIndex = onStateIndex - 1;
+
+        }
+    }
+
+    public async Task Next()
+    {
+        if (onStateIndex != lastIndex)
+        {
+
+            Steps.ForEach(x =>
+            {
+                if (x.Index == onStateIndex + 1) {
+	                x.OnActive(); 
+                }
+                else {
+	                x.OnInactive();
+                }
+            });
+            onStateIndex = onStateIndex + 1;
+        }
+    }
+
+
+
+
+
+}

@@ -1,0 +1,29 @@
+﻿
+@code {
+	#region Parámetros
+	[CascadingParameter(Name = "Cols")]
+	public List<Column> Cols { get; set; }
+	[CascadingParameter(Name = "SVColumns")]
+	public List<SVColumn> SVColumns { get; set; }
+	[Parameter] public RenderFragment Template { get; set; }
+	[Parameter] public RenderFragment? ChildContent { get; set; }
+	[Parameter] public bool Filtering { get; set; } = true;
+	[Parameter] public string FieldName { get; set; }
+	[Parameter] public string FieldIdentifier { get; set; }
+	[Parameter] public string? Format { get; set; } = null;
+	[Parameter] public ColumnType ColumType { get; set; } = ColumnType.Default;
+	[Parameter] public RenderFragment? FilterCellTemplate { get; set; }
+	#endregion
+	public bool IfRender = false;
+	#region Ciclos de Vida
+	protected override void OnInitialized()
+	{
+		Cols.Add(new Column(FieldName, FieldIdentifier, ColumType, Template,  FilterCellTemplate,Format, Filtering));
+		SVColumns.Add(this);
+	}
+
+	#endregion
+	
+	
+
+}

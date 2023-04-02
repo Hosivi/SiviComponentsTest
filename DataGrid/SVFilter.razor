@@ -1,0 +1,53 @@
+﻿@using System.Reflection.Emit
+@using System.Reflection
+@typeparam TModel
+@if (PropInfo.PropertyType == typeof(string)) {
+    <SVInputText
+        IsDisabled = "false"
+        OnInputMode = "true"
+        ValueChanged = "@()"
+        WithBox = "false"/>
+}
+@if (PropInfo.PropertyType == typeof(int) || PropInfo.PropertyType == typeof(decimal)) {
+    <SVInputNumber
+        IsDisabled = "false"
+        OnInputMode = "true"
+        ValueChanged = ""
+        WithBox = "false"/>
+}
+@if (PropInfo.PropertyType == typeof(DateTime)) {
+    @if (Column.FilterCellTemplate is null) {
+        <SVDatePickerComponent
+            ValueChanged = ""/>
+    }
+    @if (PropInfo.PropertyType.IsEnum || PropInfo.PropertyType == typeof(List<>)) {
+        @Column.FilterCellTemplate
+    }
+}
+
+@code{
+    [CascadingParameter(Name = "Grid")]
+    public SVDataGrid<TModel> Grid { get; set; }
+
+    [Parameter]
+    public FilterMetadata<TModel> FilterMetadata { get; set; }
+
+    [Parameter]
+    public object Model { get; set; }
+
+    [Parameter]
+    public Column Column { get; set; }
+
+    PropertyInfo PropInfo;
+    protected override void OnInitialized() {
+        FilterMetadata.Filters.Add();
+        base.OnInitialized();
+    }
+
+
+
+
+
+
+
+}

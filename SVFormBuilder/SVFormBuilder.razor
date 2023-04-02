@@ -1,0 +1,235 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using System.Globalization
+@using System.Reflection
+@using System.Xml.Schema
+@using BusinessSharedKernell
+@using FluentValidation.Results
+@using Microsoft.AspNetCore.Components.CompilerServices
+@using Microsoft.AspNetCore.Components.Rendering
+@using SiviComponents.FormBuilder
+@using SiviComponents.Forms;
+@using Utils
+@implements IFormBuilder
+@typeparam TModel where TModel : class
+<CascadingValue Value="this" Name="FormBuilder">
+	<SVSpinner @ref="Spin" ExternalRendering="true">
+		<SVForm
+			Model = "FormModel" >
+			<div class="form-block">
+				<h5 class="h5 text-center">@FormTittle</h5>
+			</div>
+			@if (Configuration.Columns == 1) {
+				@if (Configuration.FieldSets.Any()) {
+					@foreach (var fs in Configuration.FieldSets) {
+						<SVFieldSet
+							TModel = "TModel"
+							Title = "@fs.FormTitle" >
+							@foreach (var f in fs.FormControls) {
+								<SVFormElement
+									TModel = "TModel"
+									FieldConfiguration = "@f"
+									FormModel = "@FormModel"
+									FormMode = "@FormMode"/>
+							}
+						</SVFieldSet>
+					}
+				} else {
+					foreach (var f in Configuration.FormControls) {
+						<SVFormElement
+							TModel = "TModel"
+							FieldConfiguration = "@f"
+							FormModel = "@FormModel"
+							FormMode = "@FormMode" ></SVFormElement>
+					}
+				}
+			} else {
+				@if (Configuration.FieldSets.Any()) {
+					<div
+						class = "flex-multicolumn-container" >
+						@foreach (var fs in Configuration.FieldSets) {
+							<SVFieldSet
+								TModel = "TModel"
+								Title = "@fs.FormTitle" >
+								<div
+									class = "flex-multicolumn-subcontainer" >
+									@foreach (var f in fs.FormControls) {
+										<SVFormElement
+											TModel = "TModel"
+											FieldConfiguration = "@f"
+											FormModel = "@FormModel"
+											FormMode = "@FormMode" ></SVFormElement>
+									}
+								</div>
+								<style>
+								    .flex-multicolumn-subcontainer {
+                                        display: inline-grid;
+                                        grid-template-columns: repeat(@($"{fs.Columns}"), 1fr);
+                                        column-gap: 1rem;
+                                        width: 100%;
+                                    }
+								</style>
+							</SVFieldSet>
+						}
+					</div>
+				} else {
+					<div
+						class = "flex-multicolumn-container" >
+						@foreach (var f in Configuration.FormControls) {
+							<SVFormElement
+								TModel = "TModel"
+								FieldConfiguration = "@f"
+								FormModel = "@FormModel"
+								FormMode = "@FormMode" ></SVFormElement>
+						}
+					</div>
+				}
+				<style>
+				    .flex-multicolumn-container {
+                        display: grid;
+                        grid-template-columns: repeat(@($"{Configuration.Columns}"), 1fr);
+                        column-gap: 1rem;
+                    }
+				</style>
+			}
+			@if (FormModel is not null) {
+
+				<div
+					class = "form-block text-center" >
+					@if (FormMode == FormMode.Create) {
+						<Button
+							Type = "primary"
+							Onclick = "@(async () => await Submit())" >@SubmitButtonText</Button>
+					} else if (FormMode == FormMode.Edit) {
+						<Button
+							Type = "primary"
+							Onclick = "@(async () => await Submit())" >@EditButtonText</Button>
+					} else if (FormMode == FormMode.Read) {
+						<Button
+							Type = "primary"
+							Onclick = "@OnEditMode" >Cambiar a modo edición</Button>
+					}
+				</div>
+				@if (IsHaveValidation) {
+					<ValidationComponent
+						TValue = "TModel"
+						Model = "FormModel"
+						@ref = "validationComponent" ></ValidationComponent>
+				}
+				<div
+					class = "form-container" >
+				</div>
+			}
+
+			<style>
+			    .form-container { width: 100%; }
+			</style>
+		</SVForm>
+	@* <button @onclick="Tester"> *@
+	@* 	boton *@
+	@* </button> *@
+	</SVSpinner>
+</CascadingValue>
+
+
+@code {
+
+	[Parameter]
+	public TModel FormModel { get; set; }
+
+	[Parameter]
+	public FormConfiguration<TModel> Configuration { get; set; }
+
+	[Parameter]
+	public string? SubmitButtonText { get; set; }
+
+	[Parameter]
+	public string? EditButtonText { get; set; } = "Editar";
+
+	[Parameter]
+	public string? FormTittle { get; set; }
+
+	[Parameter]
+	public EventCallback<TModel> OnSubmit { get; set; }
+
+	[Parameter]
+	public FormMode FormMode { get; set; }
+
+	[Parameter]
+	public bool IsHaveValidation { get; set; } = true;
+
+	[Parameter]
+	public EventCallback OnEditMode { get; set; }
+
+	SVSpinner Spin;
+	public delegate void WhenModelChange(SVFormBuilder<TModel> builder, SVFormElement<TModel> formElement, (string modelProperty, object? x) modelAndProperty);
+	public event WhenModelChange OnModelWasChanged;  
+	public Dictionary<IFieldBuilder, object?> InputsCollection { get; set; } = new Dictionary<IFieldBuilder, object>();
+	private RenderFragment? FormRendered { get; set; }
+	bool thereAreErrors = false;
+	ValidationResult validationResult;
+	ValidationComponent<TModel> validationComponent;
+	bool shouldRender = true;
+	int counter = 0;
+
+	public void ChangeFormMode(FormMode formMode) {
+		if (OnEditMode.HasDelegate) {
+			OnEditMode.InvokeAsync();
+		} else {
+			FormMode = formMode;
+		}
+	}
+
+	protected override void OnInitialized() {
+	}
+
+	protected override void OnAfterRender(bool firstRender) {
+		if (firstRender) {
+			Spin.RenderChild();	
+		}
+		base.OnAfterRender(firstRender);
+	}
+
+	public async Task Submit() {
+		if (IsHaveValidation) {
+			validationComponent.OnValidate();
+			if (validationComponent.IsValid) {
+				await OnSubmit.InvokeAsync(FormModel);
+			}
+		} else {
+			await OnSubmit.InvokeAsync(FormModel);
+		}
+	}
+
+	public async Task OnReadMode(TModel model) {
+		FormMode = FormMode.Read;
+	}
+
+
+	protected override bool ShouldRender() {
+		return shouldRender;
+	}
+
+	public void WhenModelWasChanged(string modelProperty, object value) {
+	    ///Este evento refresca todos los componentes
+		foreach (var ic in InputsCollection) {
+		ic.Key.Refresh();	
+		}
+		var inp = InputsCollection.SingleOrDefault(x => {
+			var t = x.Key;
+			return t.ModelProperty == modelProperty; 
+		});
+		 
+		///Aquí conozco la propiedad y el camvio de la propiedad
+		var x=inp.Value.GetType().GetProperty("Value")?.GetValue(inp.Value);
+		if (OnModelWasChanged is not null) {
+			OnModelWasChanged.Invoke(this,(SVFormElement<TModel>)inp.Key,(modelProperty,x));	
+		}
+		Console.WriteLine($"desde el fbuilder inp que se cambio: {inp.Key.ModelProperty} y eñ valor es {x}" );
+		
+	}
+
+	public void SubscribeInput(IFieldBuilder fieldBuilder) {
+		InputsCollection.TryAdd(fieldBuilder, fieldBuilder.InputElementChild);
+	}
+
+}

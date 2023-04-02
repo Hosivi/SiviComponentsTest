@@ -1,0 +1,38 @@
+﻿@using System.Data.Common
+@inherits SiviDomComponentBase
+
+<div id="@Id" @attributes="Attributes">
+	@ChildContent
+</div>
+
+@code {
+	string cols;
+
+	[Parameter]
+	public int? Cols {
+		get => Cols;
+		set {
+			cols = !value.HasValue ? "col" : (value.Value == 0 ? "col-md-12" : $"col-md-{value.Value}");
+			CustomClassList?.Add(cols);
+		}
+	}
+
+	[Parameter]
+	public int? SmCols { get; set; }
+
+	[Parameter]
+	public int? XlCols { get; set; }
+
+	[Parameter]
+	public bool IfCustomWidth { get; set; } = false;
+
+	protected override void OnInitialized() {
+		if(string.IsNullOrEmpty(cols))
+		{
+			cols = "col";
+			CustomClassList?.Add(cols);
+		}
+		base.OnInitialized();
+	}
+
+}

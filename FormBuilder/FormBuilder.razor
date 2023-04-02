@@ -1,0 +1,112 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using System.Globalization
+@using System.Reflection
+@using System.Xml.Schema
+@using BusinessSharedKernell
+@using FluentValidation.Results
+@using Microsoft.AspNetCore.Components.CompilerServices
+@using Microsoft.AspNetCore.Components.Rendering
+@using SiviComponents.FormBuilder
+@using SiviComponents.Forms;
+@using Utils
+@inherits ComponentBase
+@typeparam TValue where TValue: class
+<CascadingValue Value="this">
+	@if (FormModel is not null)
+	{
+		<div class="form-container">
+			<form @onclick:preventDefault="true">
+				<div class="form-block"><h5 class="h5 text-center">@FormTittle</h5></div>
+				@foreach (var f in Settings.FormFieldSettings)
+				{
+					<FormElement TValue="TValue" FormFieldSetting="@f" FormModel="FormModel" FormMode="FormMode"></FormElement>
+				}
+				<div class="form-block text-center">
+					@if (FormMode == FormMode.Create)
+					{
+						<Button Type="primary" Onclick="@(async () => await Submit())">@SubmitButtonText</Button>
+					}
+					else if (FormMode == FormMode.Edit)
+					{
+						<Button Type="primary" Onclick="@(async () => await Submit())">@EditButtonText</Button>
+					}
+					else if (FormMode == FormMode.Read)
+					{
+						<Button Type="primary" Onclick="@OnEditMode">Cambiar a modo edición</Button>
+					}
+				</div>
+				@if (IsHaveValidation)
+				{
+					<ValidationComponent TValue="TValue" Model="FormModel" @ref="validationComponent"></ValidationComponent>
+				}
+			</form>
+		</div>
+	}
+</CascadingValue>
+
+<style>
+	.form-container {
+		width: 100%;
+	}
+</style>
+
+@code {
+	[Parameter] public TValue FormModel { get; set; }
+	[Parameter] public FormSettings<TValue> Settings { get; set; }
+	[Parameter] public string? SubmitButtonText { get; set; }
+	[Parameter]
+	public string? EditButtonText { get; set; } = "Editar";
+	[Parameter]
+	public string? FormTittle { get; set; }
+	[Parameter] public EventCallback<TValue> OnSubmit { get; set; }
+	[Parameter]
+	public FormMode FormMode { get; set; }
+	[Parameter] public bool IsHaveValidation { get; set; } = true;
+	[Parameter] public EventCallback OnEditMode { get; set; }
+
+	private RenderFragment? FormRendered { get; set; }
+	bool thereAreErrors = false;
+	//EditForm EditForm;
+	ValidationResult validationResult;
+	ValidationComponent<TValue> validationComponent;
+	bool shouldRender = true;
+	int counter = 0;
+	public void ChangeFormMode(FormMode formMode)
+	{
+		if (OnEditMode.HasDelegate) {
+			OnEditMode.InvokeAsync();
+		} else {
+			this.FormMode = formMode; 
+		}
+		Console.WriteLine("aaaaaaaa");
+	}
+
+	protected override void OnInitialized()
+	{
+		//Render();
+	}
+
+	public async Task Submit()
+	{
+		if (IsHaveValidation) {
+			validationComponent.OnValidate();
+			if (validationComponent.IsValid)
+			{
+				await OnSubmit.InvokeAsync(FormModel);
+			}
+		} else {
+			await OnSubmit.InvokeAsync(FormModel);
+		}
+	}
+	public async Task OnReadMode(TValue model)
+	{
+		this.FormMode = FormMode.Read;
+	}
+
+	public void Tester() {
+		Console.WriteLine("aaaaaaaaaaaaaaaaaaaaaaaaaaaa esto es del form");
+	}
+	protected override bool ShouldRender() => shouldRender;
+
+
+}

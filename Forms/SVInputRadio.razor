@@ -1,0 +1,35 @@
+﻿
+@using Microsoft.AspNetCore.Components
+@inherits SVInputBase<bool>
+@if (ConditionalRendering) {
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" id="@Id"
+		       @oninput="@(async (ChangeEventArgs e) =>{ await OnValueChanged(e);
+			                 await OnValueStringChanged(e); 
+		                 })"
+		       disabled="@IsDisabled" value="@Value">
+		<label class="form-check-label" for="@Id">
+			@Label
+		</label>
+	</div>
+}
+
+@code {
+	[Parameter] public EventCallback<string?> ValueStringChanged { get; set; }
+	[Parameter] public string ValueString { get; set; }
+	[Parameter] public string BinderStringProperty { get; set; }
+
+	public async Task OnValueStringChanged(ChangeEventArgs e)
+	{
+		ValueString = BinderStringProperty;
+		if ((bool)e.Value)
+		{
+			await ValueStringChanged.InvokeAsync(ValueString);
+		} else {
+			await ValueStringChanged.InvokeAsync(null);
+		}
+
+	}
+
+
+}                                                        

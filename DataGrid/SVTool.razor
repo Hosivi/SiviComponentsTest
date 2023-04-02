@@ -1,0 +1,74 @@
+﻿@using Microsoft.JSInterop
+@using SiviComponents.EventArgs
+@using System.Net.Http.Headers
+@inherits SiviComponentBase	
+
+@switch (ToolType) {
+	case ButtonType.Add:
+		<Button Type="primary" data-bs-toggle="tooltip" data-bs-title="@ToolTipMessage" Onclick="@(async () => { await OnClick(this);})">
+			<i class="las la-plus"></i>
+		</Button>
+		break;
+		case ButtonType.DownLoad:
+		<Button Type="primary" data-bs-toggle="tooltip" data-bs-title="@ToolTipMessage" Onclick="@(async () => { await OnClick(this);})">
+				<i class="las la-download"></i>
+			</Button>
+			break;
+	case ButtonType.Edit:
+	     <Button Type="primary" data-bs-toggle="tooltip" data-bs-title="@ToolTipMessage" Onclick="@(async () => { await OnClick(this);})">
+	     <i class="la la-edit"></i>
+	     </Button>
+		break;
+	case ButtonType.Custom:
+		<Button Type="primary" data-bs-toggle="tooltip" data-bs-title="@ToolTipMessage" Onclick="@(async () => { await OnClick(this);})">
+			@ChildContent
+		</Button>
+		break;
+}
+
+
+
+@code {
+	[Parameter] public ButtonType ToolType { get; set; }
+	[Parameter] public string? ToolTipMessage { get; set; }
+	[Parameter] public EventCallback<SVTool> OnClickAddButton { get; set; }
+	[Parameter] public EventCallback<SVTool> OnClickEditButton { get; set; }
+	[Parameter] public EventCallback<SVTool> OnClickDownloadButton { get; set; }
+	[Parameter] public EventCallback OnCustomClick { get; set; }
+	[Parameter] public RenderFragment ChildContent { get; set; }
+	//[Parameter] public GridRowEventArgs<TValue> GridRowEventArgs { get; set; } = new GridRowEventArgs<TValue>();
+	//[Parameter] public EventCallback<GridRowEventArgs<TValue>>? BeforeAdd { get; set; }
+	//[Parameter] public EventCallback<GridRowEventArgs<TValue>>? OnAdd { get; set; }
+	//[Parameter] public EventCallback<GridRowEventArgs<TValue>>? AfterAdd { get; set; }
+	IJSObjectReference module;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender) {
+		if (firstRender) {
+			module = await Js.InvokeAsync<IJSObjectReference>("import", "./_content/SiviComponents/js/SVToolTip.js");
+			await module.InvokeVoidAsync("ActivateToolTips");
+		}
+	}
+
+	public async Task OnClick(SVTool svTool) 
+	{
+		if (svTool.ToolType==ButtonType.Add) {
+			await OnClickAddButton.InvokeAsync(svTool);
+		}
+		if (svTool.ToolType == ButtonType.Edit)
+		{
+			await OnClickEditButton.InvokeAsync(svTool);
+		}
+		if (svTool.ToolType == ButtonType.Custom)
+		{
+			await OnCustomClick.InvokeAsync();
+		}
+		if (svTool.ToolType == ButtonType.DownLoad)
+		{
+			await OnClickDownloadButton.InvokeAsync(svTool);
+		}
+	}
+
+}  
+
+
+

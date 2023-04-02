@@ -1,0 +1,59 @@
+﻿@inherits SiviComponentBase
+@if (Loading)
+{
+	<Container Height="100%" CustomClassList="@(new List<string>() { "spinner-content" })">
+		<div class="spinner-border text-primary" role="status">
+			<span class="visually-hidden">Loading...</span>
+		</div>
+	</Container>
+	<style>
+	.spinner-content {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100vw;
+		height: 100vh !important; 
+	}	
+
+	</style>
+}
+else
+{
+	@ChildContent
+}
+
+@code {
+
+	[Parameter] public RenderFragment ChildContent { get; set; }
+
+	[Parameter]
+	public int TimeOfDelay { get; set; } = 2000;
+	[Parameter] public bool Loading { get; set; } = true;
+	[Parameter]
+	public string Mode { get; set; } = "time";
+	[Parameter]
+	public bool ExternalRendering { get; set; } = false;
+
+	protected override async Task OnInitializedAsync() {
+		Loading = true;
+	}
+
+	public  void OnParameterSet() {
+		Loading = true;
+	}
+	protected override async Task OnAfterRenderAsync(bool firstRender) {
+		if (firstRender) {
+			if (!ExternalRendering) {
+				await Task.Delay(TimeOfDelay);
+				Loading = false;
+				StateHasChanged();
+			}
+		}
+	}
+
+	public void RenderChild() {
+		Loading = false;
+		StateHasChanged();
+	}
+
+}

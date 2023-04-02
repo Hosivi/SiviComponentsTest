@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8a5c72af-66e8-4864-8b0e-afde760c7878" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.SiviComponents.dir/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.SiviComponents.dir/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.SiviComponents.dir/.idea/indexLayout.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.SiviComponents.dir/.idea/projectSettingsUpdater.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.SiviComponents.dir/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.SiviComponents.dir/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Base/SVSpinner.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Base/SiviComponentBase.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Base/SiviDomComponentBase.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CustomEvents/OnClickAtDomArgs.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DashBoardLayout.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataGrid/ButtonType.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataGrid/Field.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataGrid/PivotGrid/PivotGrid.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataGrid/ReporterGrid/SVReporterGrid.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataGrid/SVCell.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataGrid/SVColumn.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataGrid/SVDataGrid.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataGrid/SVPaginator.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataGrid/SVRow.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DataGrid/SVTool.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DateComponents/DatePicker.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DateComponents/SVDatePickerComponent.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/EventArgs/GridRowEventArgs.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ExampleJsInterop.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FormBuilder/FormBuilder.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FormBuilder/FormElement.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FormBuilder/FormMode.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FormBuilder/FormSettings.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/Button.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/SVFieldSet.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/SVForm.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/SVInput.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/SVInputBase.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/SVInputGroup.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/SVInputNumber.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/SVInputPassword.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/SVInputRadio.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/SVInputText.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/SVSwitch.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Forms/ValidationComponent.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Grid/Column.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Grid/Container.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Grid/Div.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Grid/Row.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/JsInterOperability.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Menu/MenuBar.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Menu/NavItem.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Menu/NavItemComponent.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Menu/SiviNavLink.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Modal/INotiticatorComponentService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Modal/SVModal.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Modal/SVNotificator.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SVDropDownSelect/SVDropDownItem.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SVDropDownSelect/SVDropDownSelect.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SVFormBuilder/FormConfiguration.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SVFormBuilder/SVFormBuilder.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SVFormBuilder/SVFormElement.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SVStepper/SVStepper.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SVStepper/Step.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ServiceCollectionExtensions.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Services/ComponentIdBuilder.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Services/CssMapper.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Services/CssStyle.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Services/IComponentIdBuilder.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Services/ICssMapper.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Services/IValidationService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Services/MessagingCenter.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Services/ValidationService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SiviComponents.csproj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SiviComponents.sln" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Templates/SVLoginForm.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Timer/SVTimer.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_Imports.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wwwroot/background.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wwwroot/css/sivicomponents.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wwwroot/css/styles.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wwwroot/css/styles.css.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wwwroot/exampleJsInterop.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wwwroot/js/SVDropDownList.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wwwroot/js/SVToolTip.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wwwroot/js/bootstrap.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wwwroot/js/bootstrap.min.js.map" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectId" id="2Nb8niNk1vXgqD8AQraYtgIqgEk" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "C:\\Users\\hosiv\\AppData\\Local\\JetBrains\\Shared\\vAny\\DecompilerCache",
+      "C:\\Users\\hosiv\\AppData\\Local\\JetBrains\\Shared\\vAny\\SourcesCache",
+      "C:\\Users\\hosiv\\AppData\\Local\\Symbols\\src"
+    ]
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8a5c72af-66e8-4864-8b0e-afde760c7878" name="Changes" comment="" />
+      <created>1679921589672</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1679921589672</updated>
+      <workItem from="1679921590713" duration="619000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

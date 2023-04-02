@@ -1,0 +1,34 @@
+﻿
+
+
+@code {
+	[CascadingParameter] public SVStepper SVStepper { get; set; }
+	[Parameter] public RenderFragment ChildContent { get; set; }
+	[Parameter] public string  Title { get; set; }
+	[Parameter]
+	public bool IsActive { get; set; } = false;
+	[Parameter]
+	public int Index { get; set; }
+
+	[Parameter]
+	public bool StepNoNext { get; set; } = false;
+
+	[Parameter]
+	public string OnBeforeText { get; set; } = "Regresar";
+	[Parameter]
+	public string OnNextText { get; set; } = "Siguiente";
+
+	protected override void  OnInitialized() {
+		Index = SVStepper.Steps.Count()+1;
+		IsActive = Index == 1 ? true : false;
+		SVStepper.Steps.Add(this);
+	}
+
+	public void OnActive() {
+		IsActive = true;
+	}
+	public void OnInactive() {
+		IsActive = false;
+	}
+
+}

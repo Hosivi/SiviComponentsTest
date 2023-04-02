@@ -1,0 +1,156 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+	  <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.SessionStorage" Version="2.2.0" />
+    <PackageReference Include="FluentValidation" Version="11.5.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Modal\" />
+    <Folder Include="CustomEvents\" />
+    <Folder Include="EventArgs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Grid\Row.razor" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Update="Base\SVSpinner.razor">
+      <CustomToolNamespace>SiviComponents.Base</CustomToolNamespace>
+    </Content>
+    <Content Update="DateComponents\SVDatePickerComponent.razor">
+      <CustomToolNamespace>SiviComponents.DateComponents</CustomToolNamespace>
+    </Content>
+    <Content Update="FormBuilder\FormBuilder.razor">
+      <CustomToolNamespace>SiviComponents.FormBuilder</CustomToolNamespace>
+    </Content>
+    <Content Update="FormBuilder\FormElement.razor">
+      <CustomToolNamespace>SiviComponents.FormBuilder</CustomToolNamespace>
+    </Content>
+    <Content Update="Forms\ValidationComponent.razor">
+      <CustomToolNamespace>SiviComponents.FormBuilder</CustomToolNamespace>
+    </Content>
+    <Content Update="Forms\Button.razor">
+      <Generator>SiviComponents.Forms</Generator>
+    </Content>
+    <Content Update="Forms\SVInput.razor">
+      <CustomToolNamespace>SiviComponents.Forms</CustomToolNamespace>
+    </Content>
+    <Content Update="Forms\SVInputNumber.razor">
+      <CustomToolNamespace>SiviComponents.Forms</CustomToolNamespace>
+    </Content>
+    <Content Update="Forms\SVInputPassword.razor">
+      <CustomToolNamespace>SiviComponents.Forms</CustomToolNamespace>
+    </Content>
+    <Content Update="Forms\SVInputText.razor">
+      <CustomToolNamespace>SiviComponents.Forms</CustomToolNamespace>
+    </Content>
+    <Content Update="Grid\Row.razor">
+      <CustomToolNamespace>SiviComponents.Grid</CustomToolNamespace>
+    </Content>
+    <Content Update="Menu\MenuBar.razor">
+      <CustomToolNamespace>SiviComponents.Menu</CustomToolNamespace>
+    </Content>
+    <Content Update="SVDropDownSelect\SVDropDownItem.razor">
+      <CustomToolNamespace>SiviComponents.SVDropDownSelect</CustomToolNamespace>
+    </Content>
+    <Content Update="SVDropDownSelect\SVDropDownSelect.razor">
+      <CustomToolNamespace>SiviComponents.SVDropDownSelect</CustomToolNamespace>
+    </Content>
+    <Content Update="SVStepper\SVStepper.razor">
+      <CustomToolNamespace>SiviComponents.SVStepper</CustomToolNamespace>
+    </Content>
+    <Content Update="Templates\SVLoginForm.razor">
+      <CustomToolNamespace>SiviComponents.Templates</CustomToolNamespace>
+    </Content>
+  </ItemGroup>
+	<ItemGroup>
+    <Compile Update="Base\SiviDomComponentBase.cs">
+      <CustomToolNamespace>namespace SiviComponents.Base</CustomToolNamespace>
+    </Compile>
+  </ItemGroup>
+
+	<ItemGroup>
+    <None Include="wwwroot\js\SVDropDownList.js" />
+  </ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="DataGrid\SVTool.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="DataGrid\Filter.razor" />
+	  <_ContentIncludedByDefault Remove="DataGrid\PivotGrid\PivotGrid.razor" />
+	  <_ContentIncludedByDefault Remove="DataGrid\ReporterGrid\SVReporterGrid.razor" />
+	  <_ContentIncludedByDefault Remove="DataGrid\SVTool.razor" />
+	  <_ContentIncludedByDefault Remove="FormBuilder\FormElement.razor" />
+	  <_ContentIncludedByDefault Remove="Grid\Div.razor" />
+	  <_ContentIncludedByDefault Remove="SVDropDownSelect\SVDropDownItem.razor" />
+	  <_ContentIncludedByDefault Remove="SVFormBuilder\SVFormBuilder.razor" />
+	  <_ContentIncludedByDefault Remove="SVStepper\Step.razor" />
+	  <_ContentIncludedByDefault Remove="SVStepper\SVStepper.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="SVDropDownSelect\SVDropDownItem.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="FormBuilder\FormElement.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="DataGrid\PivotGrid\PivotGrid.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="DataGrid\ReporterGrid\SVReporterGrid.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="SVFormBuilder\SVFormBuilder.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="SVStepper\SVStepper.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="SVStepper\Step.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Grid\Div.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\CoreLibraries\BusinessSharedKernell\BusinessSharedKernell.csproj" />
+	  <ProjectReference Include="..\CoreLibraries\SVMediator\SVMediator.csproj" />
+	  <ProjectReference Include="..\CoreLibraries\Utils\Utils.csproj" />
+	  <ProjectReference Include="..\MessagingService\MessagingService.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Microsoft.AspNetCore.Mvc.Core" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="DataGrid\Filter.razor" />
+	</ItemGroup>
+
+</Project>

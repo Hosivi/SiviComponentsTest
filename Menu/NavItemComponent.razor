@@ -1,0 +1,71 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@inherits SiviDomComponentBase
+@inject NavigationManager NavigationManager
+@implements IDisposable
+<a @ref="link" href="@Href" class="btn btn-link  @(IsActive ? "onactive": "")" id="@Id">
+    @if (IfIconNav)
+    {
+        <i class="@IconClass"></i>
+    }
+    @if (Text != null)
+    {
+        <span>@Text</span>
+    }
+    @ChildContent
+</a>
+
+@code {
+
+    [CascadingParameter] public MenuBar MenuBar { get;set; }
+    [Parameter] public string Text { get; set; }
+    [Parameter] public bool IsActive { get; set; }
+    [Parameter] public bool IfIconNav { get; set; } = true;
+    [Parameter] public string Href { get; set; } = "/";
+    [Parameter] public string IconClass { get; set; }
+    [Parameter] public string Title { get; set; }
+    ElementReference link;
+    public string? hrefAbsolute;
+    private void HandleLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        var shouldBeActiveNow = ShouldMatch(args.Location);
+
+        if (shouldBeActiveNow != IsActive)
+        {
+            IsActive = shouldBeActiveNow;
+            StateHasChanged();
+        }
+
+    }
+    private bool ShouldMatch(string absoluteUri)
+    {
+        if (absoluteUri is null)
+        {
+            return false;
+        }
+        if (string.Equals(hrefAbsolute, absoluteUri))
+        {
+            return true;
+        }
+        return false;
+
+    }
+
+    protected override void OnParametersSet()
+    {
+        //var Href = (string?)null;
+        hrefAbsolute = Href == null ? null : NavigationManager.ToAbsoluteUri(Href).AbsoluteUri;
+	    MenuBar.HrefAbsolute = hrefAbsolute;
+        IsActive = ShouldMatch(NavigationManager.Uri);
+        base.OnParametersSet();
+    }
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += HandleLocationChanged;
+        base.OnInitialized();
+    }
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+}

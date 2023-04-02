@@ -1,0 +1,197 @@
+﻿@using SVMediator
+@using MessagingService
+@implements IDisposable
+@inject SVComponentEvents componentEvents
+@inject IMessagingService MessagingService
+<SVModal CustomButtons="true" ItHaveHeader="true" @ref="Modal" Title="Notificación" NotificatorClass="notificator" NotificatorBackdrop="notificator-backdrop">
+	<ModalBody>
+		<div class="sv-notification">
+			@message
+		</div>
+		<style>
+			.sv-notification {
+				width: 400px;
+			}
+		</style>
+	</ModalBody>
+	<ModalFooter>
+		@if (IfQueryMessage)
+		{
+			<button type="button" class="btn btn-primary" @onclick="OnCancel">
+				<span>@CancelButton</span>
+			</button>
+			<button type="button" class="btn btn-primary" @onclick="(() => { OnAceptEvent();})">
+				<span>@AceptButton</span>
+			</button>
+		}
+		else
+		{
+			<button type="button" class="btn btn-primary" @onclick="OnAcept">
+				<span>@AceptButton</span>
+			</button>
+		}
+	</ModalFooter>
+</SVModal>
+<style>
+	.notificator {
+		z-index: 9999 !important;
+	}
+
+	.notificator-backdrop {
+		z-index: 9900 !important;
+	}
+
+	.sv-notification {
+		width: 100%;
+		text-align: center;
+	}
+</style>
+@code
+{
+	public SVModal Modal;
+
+	[Parameter]
+	public Action? OnAfterCancel { get; set; }
+
+	[Parameter]
+	public Action? OnAtferAcept { get; set; }
+
+	[Parameter]
+	public string Message { get; set; }
+
+	[Parameter]
+	public string CancelButton { get; set; } = "Cancelar";
+
+	[Parameter]
+	public string AceptButton { get; set; } = "Continuar";
+
+	[Parameter]
+	public EventCallback FatherEvent { get; set; }
+	[Parameter] public Action OnAceptEvent { get; set; }
+	[Parameter] public Action OnCancelEvent { get; set; }
+
+	bool IfQueryMessage = false;
+
+	string message = "";
+
+	protected override void OnInitialized()
+	{
+		componentEvents.OnNotify += NotifyHandler;
+		MessagingService.MessageSending += QueryHandler;
+		Console.WriteLine("si esta inicializado el SVNotificator");
+	}
+
+	public void NotifyHandler(object sender, StateArgs e) {
+		IfQueryMessage = e.IfQueryMessage;
+		StateHasChanged();
+		if (e.Message != null) SetMessage(e.Message);
+		if (e.ActionAfterEvent is not null)
+		{
+			OnAtferAcept = () => e.ActionAfterEvent?.Invoke();
+		}
+		if (IfQueryMessage) {
+			OnAceptEvent = () => e.ConfirmAction?.Invoke();
+			OnCancelEvent = () => e.CancelAction?.Invoke();
+		}
+		OnOpen();
+	}
+
+	public async Task QueryHandler(string query,Action action) 
+	{
+		SetMessage(query);
+		IfQueryMessage = true;
+		OnAceptEvent = action;
+		OnOpen();
+	} 
+	
+	public void OnOpen()
+	{
+		Modal.OnOpen(null);
+		StateHasChanged();
+	}
+
+	public void OnClose()
+	{
+		Modal.OnClose();
+	}
+
+	public void OnCancel()
+	{
+		if (IfQueryMessage) {
+			if (OnCancelEvent is not null) {
+				OnCancelEvent();
+			}
+		}
+		Modal.OnClose();
+		//OnAfterCancel();
+	}
+
+	public void OnAcept()
+	{
+		Modal.OnClose();
+		Console.WriteLine("se cerro el modal");
+		if (IfQueryMessage) {
+			if (OnAceptEvent is not null) {
+				OnAceptEvent(); 
+			}
+		} else {
+			if (OnAtferAcept != null)
+			{
+				OnAtferAcept();
+			}
+		}
+	}
+
+	public void SetTypeNotification(bool typeNotification)
+	{
+		IfQueryMessage = typeNotification;
+	}
+
+	public void SetMessage(string m)
+	{
+		message = m;
+	}
+
+	public void SetCancelEvent(Action? act)
+	{
+		if (act != null)
+		{
+			OnAfterCancel = act;
+		}
+	}
+
+	public void SetAceptEvent(Action? act)
+	{
+		if (act != null)
+		{
+			OnAtferAcept = act;
+		}
+	}
+
+	public void ShowNotification(string m, Action? AceptAction, Action? CancelAction, bool typeNotification)
+	{
+		SetMessage(m);
+		SetTypeNotification(typeNotification);
+		SetAceptEvent(AceptAction);
+		SetCancelEvent(CancelAction);
+		OnOpen();
+	}
+	public void Dispose()
+	{
+		message = "";
+		OnAfterCancel = null;
+		OnAtferAcept = null;
+		IfQueryMessage = false;
+		componentEvents.OnNotify -= NotifyHandler;
+		MessagingService.MessageSending-= QueryHandler;
+
+	}
+
+	public void ShowNot(string message)
+	{
+		SetMessage(message);
+		SetTypeNotification(false);
+		//SetAceptEvent(AfterAcept);
+		OnOpen();
+	}
+}

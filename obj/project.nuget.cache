@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "dgSpecHash": "wNRIg+vEGA1IlUGGzixE5wZOz0zXJrj+XneT3NxA6sHZUWbKH+HHeJepS/aSpcNwDxZh1Sp5F/U5a9esjiSKFg==",
+  "success": true,
+  "projectFilePath": "E:\\RepositoriosDesarrollo\\Horelt\\SiviComponents\\SiviComponents.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hosiv\\.nuget\\packages\\blazored.sessionstorage\\2.2.0\\blazored.sessionstorage.2.2.0.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\fluentvalidation\\11.5.1\\fluentvalidation.11.5.1.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.aspnetcore.authorization\\7.0.3\\microsoft.aspnetcore.authorization.7.0.3.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.aspnetcore.components\\7.0.3\\microsoft.aspnetcore.components.7.0.3.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.aspnetcore.components.analyzers\\7.0.3\\microsoft.aspnetcore.components.analyzers.7.0.3.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.aspnetcore.components.forms\\7.0.3\\microsoft.aspnetcore.components.forms.7.0.3.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.aspnetcore.components.web\\7.0.3\\microsoft.aspnetcore.components.web.7.0.3.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.aspnetcore.metadata\\7.0.3\\microsoft.aspnetcore.metadata.7.0.3.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\7.0.0\\microsoft.extensions.dependencyinjection.7.0.0.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\7.0.0\\microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\7.0.0\\microsoft.extensions.logging.abstractions.7.0.0.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.extensions.options\\7.0.1\\microsoft.extensions.options.7.0.1.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.extensions.primitives\\7.0.0\\microsoft.extensions.primitives.7.0.0.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\microsoft.jsinterop\\7.0.3\\microsoft.jsinterop.7.0.3.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\system.io.pipelines\\7.0.0\\system.io.pipelines.7.0.0.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\svmediator\\1.0.0\\svmediator.1.0.0.nupkg.sha512",
+    "C:\\Users\\hosiv\\.nuget\\packages\\svsharedkernel\\0.0.1\\svsharedkernel.0.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

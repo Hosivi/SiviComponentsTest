@@ -1,0 +1,27 @@
+﻿@using System.Globalization
+@using System.ComponentModel
+@using Microsoft.AspNetCore.Components.Forms
+@inherits SVInputBase<decimal>
+@if (ConditionalRendering)
+{
+    @if (WithBox)
+        <div class="form-block">
+            @if (Label is not null)
+            {
+                <label>@Label</label>
+            }
+            <input type="number" class="form-control form-control-sm" @onchange="@(async (ChangeEventArgs e) => { await OnValueChanged(e); })" @oninput="@(async (ChangeEventArgs e) => { await OnValueChanged(e); })" disabled="@IsDisabled" />
+        </div>
+}
+@code {
+
+    protected override async Task OnValueChanged(ChangeEventArgs e)
+    {
+        BindConverter.TryConvertToDecimal(e.Value, CultureInfo.InvariantCulture, out decimal v);
+        Value = v;
+        await ValueChanged.InvokeAsync(Value);
+        StateHasChanged();
+    }
+
+
+}

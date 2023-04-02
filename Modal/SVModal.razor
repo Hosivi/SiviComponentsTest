@@ -1,0 +1,128 @@
+﻿@using Microsoft.JSInterop
+@using SiviComponents.EventArgs
+@using System.Reflection
+@inherits SiviComponentBase
+@if (IsOpen)
+{
+	<div class="modal fade @Show @NotificatorClass" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="display:@Display;">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="h5">@Title</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="OnClose"></button>
+				</div>
+				<div class="modal-body">
+					@ModalBody
+				</div>
+				@if (ModalFooter is not null)
+				{
+					<div class="modal-footer">
+						@ModalFooter
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+	<div class="modal-backdrop fade @Show @NotificatorBackdrop"></div>
+	<style>
+
+		.modal-header .btn-close {
+			padding: 0;
+			left: 95%;
+			position: absolute;
+		}
+
+		.modal-header {
+			position: relative;
+			display: flex;
+			justify-content: center;
+			align-content: center;
+			padding-top: 1.5rem;
+		}
+
+			.modal-header .h5 {
+				margin-bottom: 0;
+			}
+
+		.modal.show .modal-dialog {
+			margin-top: 10rem;
+		}
+	</style>
+}
+
+
+
+
+
+@code {
+
+	[Parameter] public RenderFragment? ModalBody { get; set; }
+	[Parameter] public RenderFragment? ModalFooter { get; set; }
+	[Parameter] public string Title { get; set; }
+	[Parameter] public string Width { get; set; } = "";
+	[Parameter] public RenderFragment CustomButtonsFragment { get; set; }
+	[Parameter] public bool CustomButtons { get; set; } = false;
+	[Parameter] public string SubmitButton { get; set; } = "Enviar";
+	[Parameter] public EventCallback OnAfterClose { get; set; }
+	[Parameter] public EventCallback OnSubmit { get; set; }
+	[Parameter] public string Show { get; set; }
+	[Parameter] public string Display { get; set; }
+	[Parameter] public bool ItHaveHeader { get; set; } = true;
+	[Parameter] public bool IsOpen { get; set; } = false;
+	[Parameter] public string? NotificatorClass { get; set; } = "";
+	[Parameter] public string? NotificatorBackdrop { get; set; } = "";
+
+	public ElementReference modal;
+
+	/// <summary>
+	/// Eventos no usados. 
+	/// </summary>
+	/// <param name="childComponent"></param>
+	public delegate void OnRenderChildComponent(object childComponent);
+	public event OnRenderChildComponent RenderChildContent; 
+	public void OnRenderChildComponentEvent(object childComponent) {
+		if (RenderChildContent is not null) {
+			RenderChildContent(childComponent);
+		}
+
+	}
+
+	
+	
+	protected override void OnParametersSet()
+	{
+		Toggle();
+	}
+
+	public void OnOpen(ModalEventArgs? modalArgs)
+	{
+
+		if (modalArgs is not null)
+		{
+			Title = modalArgs.Title;
+		}
+		IsOpen = true;
+		StateHasChanged();
+	}
+
+	public void OnClose()
+	{
+		IsOpen = false;
+	}
+	public void Toggle()
+	{
+		if (IsOpen)
+		{
+			Display = "block";
+			Show = "show";
+			StateHasChanged();
+		}
+		else
+		{
+			Display = "";
+			Show = "";
+			StateHasChanged();
+		}
+	}
+
+}

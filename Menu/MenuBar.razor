@@ -1,0 +1,85 @@
+﻿@using System.Diagnostics.CodeAnalysis
+@using Microsoft.AspNetCore.Components.Routing
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+
+<CascadingValue Value="this">
+	<ul class="nav" style="display: flex; flex-direction: @Direction;">
+		@if (NavItems != null) {
+			@foreach (var nav in NavItems) {
+				<li class="nav-item">
+					<NavItemComponent IconClass="@nav.IconClass" Href="@nav.URI" ></NavItemComponent>
+				</li>
+			}
+		}
+	</ul>
+</CascadingValue>
+
+<style>
+	.btn-link {
+
+	}
+	.nav {
+		justify-content: center;
+		align-content: center;
+		margin-top: 5rem;
+		width: 100%;  
+	}
+
+	.btn-link:hover .las {
+		color: #00B294 !important; 
+	}
+
+	 .onactive {
+		 background: white !important;
+	}
+	.onactive .las {
+			color: #00B294 !important;
+	}
+	.btn-link i{
+		color: white;
+		font-size: 20px; 
+	}
+</style>
+@code {
+
+	[Parameter]
+	public string SelectedPage { get; set; } = "";
+
+	[Parameter]
+	public string Direction { get; set; } = "column";
+
+	[Parameter]
+	public List<NavItem>? NavItems { get; set; }
+
+	Button btn;
+	public string HrefAbsolute;
+
+	private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+	{
+			
+	}
+
+	protected override void OnInitialized()
+	{
+		NavigationManager.LocationChanged += HandleLocationChanged;
+		base.OnInitialized();
+	}
+
+	public void OnNavigate(NavItem n) {
+		NavItems.ForEach(x => x.IsActive = false);
+		n.IsActive = true;
+	}
+	protected override void OnParametersSet() {
+		var nav = NavItems.FirstOrDefault(x => x.IsActive = true);
+		SelectedPage = nav.Title;
+		base.OnParametersSet();
+
+	}
+
+	public void Dispose() {
+		NavigationManager.LocationChanged -= HandleLocationChanged;
+	}
+
+}

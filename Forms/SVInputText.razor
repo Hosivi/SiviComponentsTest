@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using SiviComponents.Forms;
+@inherits SVInputBase<string?>
+
+@if (ConditionalRendering) {
+	@if (WithBox) {
+		@if (OnInputMode) {
+			<input type="text" placeholder="@Placeholder" class="form-control form-control-sm" @oninput="@(async (ChangeEventArgs e) => { await OnValueChanged(e); })" disabled="@IsDisabled" value="@Value" />
+		} else {
+			<input type="text" placeholder="@Placeholder" class="form-control form-control-sm" @onchange="@(async (ChangeEventArgs e) => { await OnValueChanged(e); })" @oninput="@(async (ChangeEventArgs e) => { await OnValueChanged(e); })" disabled="@IsDisabled" value="@Value" />
+		}
+
+	} else {
+		<div class="form-block" disabled="@IsDisabled">
+			@if (Label is not null) {
+				<label>@Label :</label>
+			}
+			<input type="text" placeholder="@Placeholder" class="form-control form-control-sm" @onchange="@(async (ChangeEventArgs e) => { await OnValueChanged(e); })" @oninput="@(async (ChangeEventArgs e) => { await OnValueChanged(e); })" disabled="@IsDisabled" value="@Value"/>
+		</div>
+	}
+}
+@code {
+
+	#region Parámetros
+
+	[Parameter] public bool WithBox { get; set; } = false;
+
+
+	#endregion
+
+
+}

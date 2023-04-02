@@ -1,0 +1,23 @@
+﻿@inherits SVInputBase<TValue>
+@typeparam TValue
+<div class="form-block">
+	@if (Label is not null)
+	{
+		<label>@Label</label>
+	}
+	<input type="@(InputType.Trim())" class="form-control form-control-sm" @onchange="@(async (ChangeEventArgs e) => { await OnValueChanged(e); })" @oninput="@(async (ChangeEventArgs e) => { await OnValueChanged(e); })" />
+
+</div>
+<style>
+	.form-block {
+		margin: 0;
+		padding-top: 0.5rem;
+		padding-bottom: 0.5rem;
+	}
+</style>
+@code {
+
+	[Parameter]
+	public string InputType { get; set; } = "text";
+
+}

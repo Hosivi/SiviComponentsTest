@@ -1,0 +1,37 @@
+﻿<CascadingValue Value="this">
+	<SVSpinner @ref="Spin" ExternalRendering="true">
+		<form @onclick:preventDefault="true">
+			@ChildContent
+		</form>
+	</SVSpinner>
+</CascadingValue>                                                                          
+
+@code {                              
+
+
+	[Parameter]
+	public object? Model { get; set; }
+	[CascadingParameter (Name = "FormBuilder")] IFormBuilder FormBuilder { get; set; }
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+	SVSpinner Spin;
+	bool Render = false;
+	public List<SVInputBase<object>?> Inputs { get; set; } = new List<SVInputBase<object>?>();
+	protected override Task OnAfterRenderAsync(bool firstRender) {
+		if (firstRender) {
+			Render = true;
+			Spin.RenderChild();
+		}
+		return base.OnAfterRenderAsync(firstRender);
+	}
+	                                                                                  
+	public void Refresh(string attribute) {
+		Console.WriteLine($"El modelo fue cambiado {attribute}");
+	}
+	public void WhenModelWasChanged(string modelPropertyChanged, object value) {          
+		if (FormBuilder != null) {           
+			FormBuilder.WhenModelWasChanged(modelPropertyChanged, value);	
+		}
+		
+	}                                                                        
+}

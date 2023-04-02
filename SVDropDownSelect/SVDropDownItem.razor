@@ -1,0 +1,28 @@
+﻿@using System.Reflection
+@using Utils
+@typeparam TItem
+@if (typeof(TItem) == typeof(string))
+{
+	<li class="dropdown-item" @onclick="@(async ()=>await GetSelectedValue.InvokeAsync(ItemValue))">@(string.IsNullOrEmpty(ItemValue?.ToString()) ? "" : ItemValue?.ToString())</li>
+} 
+@if (typeof(TItem).IsEnum) {
+
+	<li class="dropdown-item" @onclick="@(async ()=>await GetSelectedValue.InvokeAsync(ItemValue))">@(ItemValue?.GetAttribute<StringFieldAttribute>().StringifiedValue)</li>
+}
+else {
+	if (PropertyName is not null) {
+		var propValue = ItemValue?.GetType().GetProperty(PropertyName)?.GetValue(ItemValue) ;
+		<li class="dropdown-item" @onclick="@(async ()=>await GetSelectedValue.InvokeAsync(ItemValue))">@(string.IsNullOrEmpty(propValue?.ToString()) ? "" : propValue?.ToString())</li>	
+	}
+}
+
+
+@code {
+ 	[Parameter] public TItem? ItemValue { get; set; }
+ 	[Parameter] public string? PropertyName { get; set; }
+ 	[Parameter] public EventCallback<TItem?> GetSelectedValue { get; set; }
+ 	protected override void OnInitialized() {
+ 		base.OnInitialized();
+ 	}
+ 
+ }

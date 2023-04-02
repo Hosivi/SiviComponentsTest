@@ -1,0 +1,17 @@
+﻿@inherits SiviComponents.Base.SiviDomComponentBase 
+<CascadingValue Value="this">
+	<div id="@Id"  @attributes="Attributes">
+		@ChildContent
+	</div>
+
+</CascadingValue>
+
+																																							                       
+
+@code {
+	protected override void OnInitialized()
+	{
+		CustomClassList?.Add("row");
+		base.OnInitialized();
+	}
+}

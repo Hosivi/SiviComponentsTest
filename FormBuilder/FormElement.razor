@@ -1,0 +1,166 @@
+﻿@using Microsoft.AspNetCore.Components.Rendering
+@using SiviComponents.FormBuilder;
+@using SiviComponents.Forms;
+@using SiviComponents.SVDropDownSelect;
+@typeparam TValue where TValue: class
+@if (Input is not null)
+{
+	@Input
+}
+
+@code {
+    [Parameter] public FormFieldSetting FormFieldSetting { get; set; }
+	[Parameter] public FormMode FormMode { get; set; }
+    [Parameter] public TValue FormModel { get; set; }
+    [CascadingParameter] private FormBuilder<TValue> FormBuilder { get; set; }
+
+    private RenderFragment? Input { get; set; }
+	protected override void OnInitialized()
+    {
+        Input = FormFieldElement();
+    }
+	private RenderFragment FormFieldElement() => builder =>
+    {
+        builder.OpenRegion(0);
+	    if (FormFieldSetting.FunctionalType == FunctionalType.Control) {
+		    RenderControl(builder, FormFieldSetting);
+	    } else {
+		    if (FormFieldSetting.IfCustom)
+		    {
+			    var typeArguments = FormModel.GetType().GetProperty(FormFieldSetting.ModelField)?.PropertyType;
+			    if (typeArguments != null && FormFieldSetting.GetType() == typeof(CustomFormFieldSetting<>).MakeGenericType(typeArguments))
+			    {
+				    CreateCustomFieldFragment(builder, FormFieldSetting);
+			    }
+		    } else {
+			    CreateFragment(builder, FormFieldSetting);
+		    }
+	    }
+	    builder.CloseComponent();
+        builder.CloseRegion();
+
+    };
+	private void RenderControl(RenderTreeBuilder builder, FormFieldSetting f)
+	{
+		switch (f.CustomType) {
+			case CustomType.Button:
+				builder.OpenComponent(0, typeof(Button));
+				builder.AddAttribute(1, "ButtonText", f.Label);
+				builder.AddAttribute(2, "OnClick", EventCallback.Factory.Create<object>(this,x => { FormBuilder.Tester(); }));
+				break;
+		}
+	}
+    private void CreateCustomFieldFragment(RenderTreeBuilder builder, FormFieldSetting f)
+    {
+        var propertyReference = FormModel.GetType().GetProperty(f.ModelField);
+        switch (f.CustomType)
+        {
+            case CustomType.Select:
+                var typeComponent = typeof(SVDropDownSelect<>).MakeGenericType(propertyReference.PropertyType);
+                builder.OpenComponent(0, typeComponent);
+                builder.AddAttribute(1, "DropDownListData", f.GetType().GetProperty("CustomGenericValues")?.GetValue(f));
+                builder.AddAttribute(2, "PropertyName", f.ValueReference);
+                builder.AddAttribute(3, "Label", f.Label);
+                builder.AddAttribute(4, "Value", propertyReference.GetValue(FormModel));
+                builder.AddAttribute(5, "ValueActionChanged", f.GetType().GetProperty("EventCallback")?.GetValue(f));
+                var valueReference = propertyReference.GetValue(FormModel);
+				if (propertyReference.PropertyType.IsEnum)
+				{
+					builder.AddAttribute(6, "SelectedValue", valueReference);
+	            } else  {
+					if (valueReference?.GetType().GetProperty(f.ValueReference)?.GetValue(valueReference) is not null)
+					{
+						builder.AddAttribute(6, "SelectedValue", valueReference);
+					}
+					else
+					{
+						builder.AddAttribute(6, "DropDownDefaultValue", "Selecciona una opción");
+					}	
+				}
+	            switch (FormMode)
+                {
+                    case FormMode.Read:
+                        builder.AddAttribute(7, "IsDisabled", true);
+                        break;
+                    case FormMode.Create:
+                    case FormMode.Edit:
+                        builder.AddAttribute(7, "IsDisabled", false);
+                        break;
+                }
+                break;
+	        case CustomType.Button:
+				builder.OpenComponent(0, typeof(Button));
+		        break;
+        }
+    }
+    private void CreateFragment(RenderTreeBuilder builder, FormFieldSetting f)
+    {
+        var property = FormModel.GetType().GetProperty(f.ModelField);
+	    switch (property.PropertyType.Name)
+		{
+			case "String":
+				if (f.Type == "password")
+				{
+					builder.OpenComponent(0, typeof(SVInputPassword));
+				}
+				else
+				{
+					builder.OpenComponent(0, typeof(SVInputText));
+				}
+				builder.AddAttribute(1, "Label", f.Label);
+				builder.AddAttribute(2, "Placeholder", f.PlaceHolder);
+				builder.AddAttribute(3, "ValueChanged", EventCallback.Factory.CreateInferred(this, s => property.SetValue(FormModel, s), (string)property.GetValue(FormModel)));
+				builder.AddAttribute(4, "Value", property.GetValue(FormModel));
+				switch (FormMode)
+				{
+					case FormMode.Read:
+						builder.AddAttribute(5, "IsDisabled", true);
+						break;
+					case FormMode.Create:
+					case FormMode.Edit:
+						builder.AddAttribute(5, "IsDisabled", false);
+						break;
+				}
+				break;
+				break;
+			case "Int32":
+			case "Int64":
+				builder.OpenComponent(0, typeof(SVInputNumber));
+				builder.AddAttribute(1, "Label", f.Label);
+				builder.AddAttribute(2, "ValueChanged", EventCallback.Factory.CreateInferred(this, s => property.SetValue(FormModel, s), (int)property.GetValue(FormModel)));
+				builder.AddAttribute(3, "Value", property.GetValue(FormModel));
+				switch (FormMode)
+				{
+					case FormMode.Read:
+						builder.AddAttribute(4, "IsDisabled", true);
+						break;
+					case FormMode.Create:
+					case FormMode.Edit:
+						builder.AddAttribute(4, "IsDisabled", false);
+						break;
+				}
+				break;
+				break;
+			case "Decimal":
+				builder.OpenComponent(0, typeof(SVInputNumber));
+				builder.AddAttribute(1, "Label", f.Label);
+				builder.AddAttribute(2, "ValueChanged", EventCallback.Factory.CreateInferred(this, s => property.SetValue(FormModel, s), (decimal)property.GetValue(FormModel)));
+				builder.AddAttribute(3, "Value", property.GetValue(FormModel));
+				switch (FormMode)
+				{
+					case FormMode.Read:
+						builder.AddAttribute(4, "IsDisabled", true);
+						break;
+					case FormMode.Create:
+					case FormMode.Edit:
+						builder.AddAttribute(4, "IsDisabled", false);
+						break;
+				}
+				break;
+				break;
+		}
+
+	}
+
+	
+}

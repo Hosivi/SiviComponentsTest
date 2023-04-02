@@ -1,0 +1,171 @@
+﻿@inherits SVInputBase<TValue>
+@using Microsoft.JSInterop
+@using SiviComponents.Forms;
+@using Utils
+@typeparam TValue
+@inject IJSRuntime js
+
+@if (ConditionalRendering) {
+	<div class="@(WithBlock ? "form-block" : "")" @ref="Ref">
+		@if (Label is not null)
+		{
+			<label class="dropdown-label" style="margin-right: 0.5em;">@Label:</label>
+		}
+		<div class="dropdown-content">
+			@if (IsDisabled)
+			{
+				<button class="btn dropdown-toggle" @onclick="Toggle" id="@Id" disabled>@DropDownPlaceHolder</button>
+			}
+			else
+			{
+				<button class="btn dropdown-toggle"  @onclick:preventDefault="true"  @onclick="Toggle" id="@Id">@(string.IsNullOrEmpty(DropDownDefaultValue) ? (string.IsNullOrEmpty(DropDownPlaceHolder) ? "Seleccione una opción" : DropDownPlaceHolder) : DropDownDefaultValue)</button>
+			}
+			<ul class="dropdown-menu @(ToggleState ? "show" : "")" @ref="dropDown">
+				@foreach (var d in DropDownListData)
+				{
+					<SVDropDownItem TItem="TValue" ItemValue="d" GetSelectedValue="GetSelectedValue" PropertyName="@PropertyName"></SVDropDownItem>
+				}
+			</ul>
+		</div>
+	</div>
+	<style>
+    .dropdown-toggle {
+        width: 100%;
+        text-align: left !important;
+    }                                                                         
+
+    .dropdown-toggle:disabled {
+        background-color: #e9ecef;
+        opacity: 1;
+    }
+
+    .dropdown-toggle:after {
+        top: calc(50% - 0.255em / 2);
+        position: absolute;
+        right: 0.7em;
+    }
+
+    .dropdown-content {
+        width: 100%;
+        position: relative;
+    }
+
+    .dropdown-label {
+        vertical-align: center;
+    }
+
+    .dropdown-menu {
+        width: 100%;
+        max-height: 300px;
+        overflow-y: scroll;
+    }
+
+</style>
+}
+
+
+@code {
+	[Parameter] public string DropDownDefaultValue { get; set; }
+	[Parameter]
+	public string? DropDownPlaceHolder { get; set; }
+	[Parameter]
+	public List<object>? Data { get; set; } = new List<object>();
+	[Parameter]
+	public List<TValue> DropDownListData { get; set; }
+	[Parameter]
+	public TValue? SelectedValue { get; set; }
+	[Parameter]
+	public string PropertyName { get; set; }
+	[Parameter]
+	public bool WithBlock { get; set; } = true;
+	public bool ToggleState = false;
+	public string ToggleClass { get; set; } = "";
+	ElementReference dropDown;
+	IJSObjectReference module;
+	string formBlockClass = "";
+
+	[JSInvokableAttribute("ToggleFromJs")]
+	public async Task ToggleFromJs(string click)
+	{
+		ToggleState = false;
+		StateHasChanged();
+	}
+	public void Toggle()
+	{
+		if (ToggleState)
+		{
+			ToggleState = false;
+
+		}
+		else
+		{
+			ToggleState = true;
+		}
+	}
+
+	public override Task SetParametersAsync(ParameterView parameters) {
+		if (typeof(TValue).IsEnum) {
+			GetEnumValues();
+		}
+		if (typeof(TValue) == typeof(object)) {
+			if (typeof(TValue).IsEnum) {
+				GetEnumValues();
+			}
+		}
+		return base.SetParametersAsync(parameters);
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		module = await js.InvokeAsync<IJSObjectReference>("import", "./_content/SiviComponents/js/SVDropDownList.js");
+		var objRef = DotNetObjectReference.Create(this);
+		await module.InvokeVoidAsync("onClickDomDetect", new object[] { objRef, Id, dropDown });
+		///Evaluando tipos
+		if (!typeof(TValue).IsEnum) {
+			DropDownDefaultValue  = SelectedValue?.GetType().GetProperty(PropertyName)?.GetValue(SelectedValue)?.ToString();
+		}
+		//if (DropDownDefaultValue is null) {
+		//	DropDownDefaultValue= "Selecciona una opción";
+		//}
+	}
+	public async Task GetSelectedValue(TValue val)
+	{
+		var props = val.GetType().GetProperties().ToList();
+		SelectedValue = val;
+		if (typeof(TValue).IsEnum) {
+			DropDownDefaultValue = val.GetAttribute<StringFieldAttribute>().StringifiedValue;
+		}
+		if (typeof(TValue)==typeof(string)) {
+			DropDownDefaultValue = val.ToString();
+		}
+		else if (!typeof(TValue).IsEnum && typeof(TValue) != typeof(string))
+		{
+			var defaultValue = val.GetType().GetProperty(PropertyName)?.GetValue(val)?.ToString();
+			if (defaultValue is not null) {
+				DropDownDefaultValue = defaultValue;
+			}
+			
+		}
+		Console.WriteLine("llego aqui tmb");
+		await OnValueChanged(new ChangeEventArgs() { Value = val });
+		if (ValueActionChanged is not null)
+		{
+			ValueActionChanged(Value);
+		}
+
+	}
+	public void GetEnumValues() {
+		List<TValue> lst = new List<TValue>();
+		var values = typeof(TValue).GetEnumValues();
+		foreach (var v in values) {
+			lst.Add((TValue)v);
+		}
+		DropDownListData = lst;
+		SelectedValue = lst.First();
+	}
+	public void OnReadMode()
+	{
+
+	}
+
+}

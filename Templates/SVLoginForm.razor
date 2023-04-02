@@ -1,0 +1,30 @@
+﻿@using SiviComponents.FormBuilder
+@using BusinessSharedKernell
+
+<FormBuilder TValue="Employee" FormModel="@Employee" Settings="@Config" SubmitButtonText="Iniciar Sesión" FormTittle="@Config.FormTitle" OnSubmit="() => OnLogin.InvokeAsync(Employee)"></FormBuilder>.
+
+
+@code {
+	[Parameter] public Employee Employee { get; set; }
+	[Parameter] public FormSettings<Employee>? Config { get; set; }
+	[Parameter]
+	public EventCallback<Employee> OnLogin { get; set; }
+
+	protected override void OnInitialized()
+	{
+		Employee = new Employee();
+		Config = new FormSettings<Employee>("Iniciar Sesión", Employee)
+			.SetFormField("IdentityDoc", x =>
+			{
+				x.Label = "Doc. Identidad";
+				x.PlaceHolder = "DNI/CE";
+			}
+			).SetFormField("Password", x =>
+			{
+				x.Label = "Contraseña";
+				x.PlaceHolder = "***********";
+				x.Type = "password"; 
+			});
+	}
+
+}

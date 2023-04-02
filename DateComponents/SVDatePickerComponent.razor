@@ -1,0 +1,177 @@
+﻿@using System.Linq.Expressions
+@inherits SVInputBase<DateTime>
+@if (ConditionalRendering) {
+	<div class="form-block">
+	@if (Label is not null)
+	{
+		<label>@Label :</label>
+	}
+	<div class="form-block-datepicker">
+		<SVInputText WithBox="true" IsDisabled="IsDisabled" @bind-Value="DateInString"  />
+		<Button Onclick="OnToggle"><i class="las la-calendar"></i></Button>
+	</div>
+</div>
+<div class="datepicker @(ToggleDatePicker ? "show-datepicker" : "")">
+	<div class="datepicker-buttons form-block">
+		<Button Onclick="PrevMonth"><i class="las la-angle-left"></i></Button>
+		<SVDropDownSelect WithBlock="false" TValue="String" DropDownListData="@DatePicker.Years" DropDownDefaultValue="@DatePicker.CurrentDate.Year.ToString()"
+						  @bind-Value="DatePicker.CurrentStringYear" ModelProperty="@ModelProperty" />
+		<SVDropDownSelect WithBlock="false" TValue="Month" DropDownListData="@DatePicker.Months" PropertyName="Name"
+						  DropDownDefaultValue="@DatePicker.CurrentMonth.Name" @bind-Value="DatePicker.CurrentMonth" ModelProperty="@ModelProperty"/>
+		<Button Onclick="NextMonth"><i class="las la-angle-right"></i></Button>
+	</div>
+	<div class="datepicker-content">
+		<table>
+			@{
+				int dayNumber = 0;
+			}
+			<thead>
+				@foreach (var day in DatePicker.AbbreviatedDayNames)
+				{
+				<th class="datepicker-cell">@day</th>
+				}
+			</thead>
+			<tbody>
+				@for (int i = 0; i < 5; i++)
+				{
+					<tr>
+						@for (int j = 0; j < 7; j++)
+						{
+							@if ((DateTime.MaxValue - DatePicker.StartDate).TotalDays <= dayNumber)
+							{
+								break;
+							}
+							DateTime date = DatePicker.StartDate.AddDays(dayNumber++);
+							if (Value.Day == date.Day)
+							{
+								// Console.WriteLine(Value);
+							}
+							<td class="datepicker-cell @((Value == date) ? "datepicker-cell-active" : "")"
+								@onclick="@(() => OnValueChanged(date))">
+								@date.Day
+							</td>
+						}
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+	<style>
+		.datepicker {
+						position: absolute;
+						display: none;
+						border-radius: 4px;
+						border: 1px solid hsla(22, 4%, 50%, 0.5);
+						box-shadow: 2px 4px 5px 0px rgba(163,146,146,0.75);
+						-webkit-box-shadow: 2px 4px 5px 0px rgba(163,146,146,0.75);
+						-moz-box-shadow: 2px 4px 5px 0px rgba(163,146,146,0.75);
+						background-color: white;
+						z-index:2;
+		}
+
+		.datepicker-cell {
+						width: 35px;
+						height: 35px;
+						text-align: center;
+						cursor: pointer;
+		}
+
+		.datepicker-buttons {
+						width: 100%;
+						display: flex;
+						flex-direction: row;
+						justify-content: space-around;
+		}
+
+		.form-block-datepicker {
+						display: flex;
+						flex-direction: row;
+		}
+
+		.show-datepicker {
+						display: unset !important;
+		}
+
+		.datepicker-buttons .dropdown-content {
+						margin: 0.5rem;
+		}
+
+		.datepicker-cell-active {
+						color: #000;
+						background-color: #26bea4;
+						border-color: #1aba9f;
+		}
+
+	</style>
+</div>
+}
+
+
+@code {
+	// [Parameter] public EventCallback<DateTime> ValueChanged { get; set; }
+	// [Parameter] public DateTime Value { get; set; } = DateTime.Today;
+	// [Parameter] public string Label { get; set; }
+	// [Parameter] public bool IsDisabled { get; set; } = false;
+	//[Parameter] public Expression<Func<object,object>>? ValueExpression { get; set; }
+	// [Parameter] public string? ModelProperty { get; set; }
+	// [CascadingParameter] public SVForm? Form { get; set; }
+	bool ToggleDatePicker = false;
+	string DateInString = "";
+	DatePicker DatePicker;
+	List<string> years;
+	bool ActiveCell;
+	bool WasClicked;
+
+	protected override void OnInitialized()
+	{
+		Value=DateTime.Today;
+		ActiveCell = false;
+		int dayNumber = 0;
+		DatePicker = new DatePicker();
+		years = new List<string>();
+		Value = DatePicker.CurrentDate;
+		DateInString = Value.ToString("dd/MM/yyyy");
+	}
+	void OnToggle()
+	{
+		ToggleDatePicker = !ToggleDatePicker;
+	}
+	public async Task OnValueChanged(DateTime date)
+	{
+		WasClicked = true;
+		Value = date;
+		DatePicker.CurrentDate = date;
+		DateInString = Value.ToString("dd/MM/yyyy");
+		await ValueChanged.InvokeAsync(Value);
+		OnToggle();
+		if (Form != null)
+		{
+			Form.WhenModelWasChanged(ModelProperty, Value);
+		}
+		if (FieldBuilder is not null)
+		{
+			FieldBuilder.WhenFieldWasChanged(ModelProperty, Value);
+		}
+		if (WhenOnValueChanged != null)
+		{
+			WhenOnValueChanged(this);
+		}
+	}
+	void PrevMonth()
+	{
+		DatePicker.CurrentDate = DatePicker.CurrentDate.AddMonths(-1);
+		DatePicker.CurrentMonth = new Month(DatePicker.Culture.DateTimeFormat.GetMonthName(DatePicker.CurrentDate.Month), DatePicker.CurrentDate.Month);
+	}
+
+	void NextMonth()
+	{
+		DatePicker.CurrentDate = DatePicker.CurrentDate.AddMonths(+1);
+	}
+
+
+	public void Dispose() {
+		DatePicker = new DatePicker();
+		string DateInString = "";
+	}
+
+}
